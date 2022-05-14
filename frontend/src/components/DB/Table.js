@@ -9,6 +9,16 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
+import { Grid } from '@mui/material';
+import { Box } from '@mui/system';
+
+import Title from './Title';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 import { list_example } from '../../test_data';
 
@@ -24,10 +34,41 @@ const columns = [
   },
 ];
 
+
+const constructSelect = (label, func, options)=>{
+    return(
+        <FormControl fullWidth>
+        <InputLabel>{label}</InputLabel>
+            <Select defaultValue="" onChange={(e)=>{func(e.target.value)}}>
+                {options.map((option)=>{
+                    return(
+                         <MenuItem value={option}>{option}</MenuItem>
+                    )
+                })}
+            </Select>
+        </FormControl>
+    )
+}
+
+
 const StickyHeadTable=() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = React.useState(list_example)
+  const [rows, setRows] = React.useState(list_example);
+
+  const [scope, setScope] = React.useState("self");
+  const [minstar, setMinstar] = React.useState(0);
+  const [status, setStatus] = React.useState("all");
+
+  const handlequery = ()=>{
+      const data = {
+          scope: scope,
+          minstar: minstar,
+          status: status
+      }
+      console.log(data)
+  }
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -40,9 +81,29 @@ const StickyHeadTable=() => {
 
   return (
     <div>
-        <Typography style={{ fontSize:20}} sx={{ mt: 1 }} variant="h5" component="div" align="center">
-            私有檔案概覽
-        </Typography>
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 1 }} >
+            <Grid item xs={2} >
+                {constructSelect("檔案範圍", setScope, ["self", "all"])}
+            </Grid>
+            <Grid item xs={2} >
+                {constructSelect("最低Review Quality", setMinstar, [0,1,2,3,4,5])}
+            </Grid>
+            <Grid item xs={2} >
+                {constructSelect("標注結果", setStatus, ["Positive", "Neutral", "Negative", "Not Graded","ALL"])}
+            </Grid>
+            <Grid item xs={4} >
+                {/*"empty intentionally"*/}
+            </Grid>
+            <Grid item xs={2} >
+                <Box display="flex" justifyContent="flex-end">
+                    <Button onClick={handlequery}  size="large" variant="contained" endIcon={<SendIcon />}>
+                        Search
+                    </Button>
+                </Box>
+            </Grid>
+        </Grid>
+        <br/>
+
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">

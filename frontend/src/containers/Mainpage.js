@@ -8,7 +8,7 @@ import Usercard from '../components/Mainpage/User';
 import Piegraph from '../components/Mainpage/Piegraph';
 import Bargraph from '../components/Mainpage/Bargraph';
 import DbInfo from '../components/Mainpage/DbInfo';
-import DenseTable from '../components/Mainpage/Table';
+import StickyHeadTable from '../components/Mainpage/Table';
 
 const Mainpage = ()=>{
     return(
@@ -95,7 +95,7 @@ const Mainpage = ()=>{
                 
             {/* Bar graph */}
             <Grid item xs={12}>
-              <DenseTable/>
+              <StickyHeadTable/>
             </Grid>
           </Grid>
           

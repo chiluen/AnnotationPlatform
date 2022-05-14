@@ -4,8 +4,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import StickyHeadTable from '../components/DB/Table';
+
 
 const DB = ()=>{
+
+    
+
+
     return(
         <Box
         component="main"
@@ -20,12 +26,13 @@ const DB = ()=>{
         }}
       >
         <Toolbar />
+
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Grid container rowSpacing={5} columnSpacing={{ xs: 30, sm: 30, md: 53}} > 
-        
-
+            <Grid item xs={12}>
+              <StickyHeadTable/>
+            </Grid>
           </Grid>
-          
         </Container>
       </Box>
     )
