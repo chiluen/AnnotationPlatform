@@ -7,12 +7,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 
-import Title from './Title';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Select from '@mui/material/Select';
@@ -20,7 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
-import { list_example } from '../../test_data';
+import { gettableinfo, getselecttableinfo } from '../../axios/DB';
 
 const columns = [
   { id: 'data', label: 'Data', minWidth: 170 },
@@ -34,6 +32,13 @@ const columns = [
   },
 ];
 
+const rows_example = [
+    {
+    data: "",
+    status: "X",
+    rank: 0
+    },
+]
 
 const constructSelect = (label, func, options)=>{
     return(
@@ -54,19 +59,26 @@ const constructSelect = (label, func, options)=>{
 const StickyHeadTable=() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = React.useState(list_example);
+  const [rows, setRows] = React.useState(rows_example);
 
   const [scope, setScope] = React.useState("self");
   const [minstar, setMinstar] = React.useState(0);
   const [status, setStatus] = React.useState("all");
 
-  const handlequery = ()=>{
-      const data = {
-          scope: scope,
-          minstar: minstar,
-          status: status
-      }
-      console.log(data)
+  React.useEffect( async()=>{
+    const data = await gettableinfo()
+    setRows(data)
+  },[])
+
+  const handlequery = async()=>{
+    //   const data = {
+    //       scope: scope,
+    //       minstar: minstar,
+    //       status: status
+    //   }
+    //   console.log(data)
+    const data = await getselecttableinfo(scope, minstar, status)
+    setRows(data)
   }
 
 

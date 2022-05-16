@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Bar } from "react-chartjs-2";
 import 'chart.js/auto' //這一定要加
-//import { getclassification } from '../../axios/Page_1_axios';
+import { getfinishpercentage } from '../../axios/Mainpage';
 import { state_sample } from '../../test_data';
 
 const options = {
@@ -13,7 +13,6 @@ const options = {
         size: 15,
         color: '0000'
       },
-
     },
   },
   maintainAspectRatio: false, //要加上這個，然後用div就可以調整資料了
@@ -27,30 +26,52 @@ const options = {
     }
   }
 }
+const state_template = {
+  labels: ["Percentage"],
+  datasets: [
+    {
+      label: 'Finish',
+      backgroundColor: "#FEC5BB", 
+      borderColor: 'rgba(0,0,0,1)',
+      borderWidth: 2,
+      data: [0]
+    },
+    {
+      label: 'Unfinish',
+      backgroundColor: "#FAE1DD", 
+      borderColor: 'rgba(0,0,0,1)',
+      borderWidth: 2,
+      data: [0]
+    }
+  ]
+}
 
 const Bargraph = () => {
-  const [state, setstate] = React.useState(state_sample)
+  const [state, setstate] = React.useState(state_template)
 
-  // React.useEffect(async(
-  // )=>{
-  //   const data = await getclassification("partial_forbar")
-    
-  //   const state_new = {
-
-  //     labels: ["體育", "社會", "娛樂", "教育", "財經", "家居", "科技"],
-      
-  //     datasets: [
-  //       {
-  //         label: "Number of Post",
-  //         backgroundColor: ["#FEC5BB", "#FAE1DD", "#E8E8E4", "#ECE4DB", "#FFE5D9","#FFD7BA","#FEC89A"], 
-  //         borderColor: 'rgba(0,0,0,1)',
-  //         borderWidth: 2,
-  //         data: [data["體育"], data["社會"], data["娛樂"], data["教育"], data["財經"], data["家居"], data["科技"]],
-  //       }
-  //     ]
-  //   }
-  //   setstate(state_new)
-  // },[])
+  React.useEffect(async ()=>{
+    const {finish, unfinish} = await getfinishpercentage()
+    const state_template = {
+      labels: ["Percentage"],
+      datasets: [
+        {
+          label: 'Finish',
+          backgroundColor: "#FEC5BB", 
+          borderColor: 'rgba(0,0,0,1)',
+          borderWidth: 2,
+          data: [finish]
+        },
+        {
+          label: 'Unfinish',
+          backgroundColor: "#FAE1DD", 
+          borderColor: 'rgba(0,0,0,1)',
+          borderWidth: 2,
+          data: [unfinish]
+        }
+      ]
+    }
+    setstate(state_template)
+  },[])
 
   return (
       <div style={{height:"300px"}}>
@@ -58,6 +79,7 @@ const Bargraph = () => {
         options={options}
         data={state}
         />
+        
       </div>
   );
 }

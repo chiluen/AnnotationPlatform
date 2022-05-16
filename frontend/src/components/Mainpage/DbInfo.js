@@ -5,21 +5,21 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-//import { gethottitle } from '../../axios/Page_1_axios';
+import { getdbstat } from '../../axios/Mainpage';
 
-import { db_sample } from '../../test_data';
-
-
-
+const db_sample = {
+    avg_words:0,
+    positive_rate:0,
+    total_data:0
+}
 
 const DbInfo = () => {
     const [datas, setdatas] = React.useState(db_sample);
-    const [secondary, setSecondary] = React.useState();
 
-    // React.useEffect( async()=>{
-    //     const data = await gethottitle()
-    //     setdatas([data["0"], data["1"], data["2"], data["3"]])
-    // },[])
+    React.useEffect( async()=>{
+        const data = await getdbstat()
+        setdatas(data)
+    },[])
 
     return (
         <div>
@@ -33,7 +33,7 @@ const DbInfo = () => {
                     </ListItemIcon>
                     <ListItemText 
                         align="left"
-                        primary={<Typography style={{fontSize:18}}>平均詞數量: {datas[0]}</Typography>}
+                        primary={<Typography style={{fontSize:18}}>平均詞數量: {datas['avg_words']}</Typography>}
                     />
                 </ListItem>
                 <ListItem>
@@ -42,7 +42,7 @@ const DbInfo = () => {
                     </ListItemIcon>
                     <ListItemText 
                         align="left"
-                        primary={<Typography style={{fontSize:18}}>正向比例: {datas[1]}</Typography>}
+                        primary={<Typography style={{fontSize:18}}>正向比例: {datas['positive_rate']}%</Typography>}
                     />
                 </ListItem>
                 <ListItem>
@@ -51,7 +51,7 @@ const DbInfo = () => {
                     </ListItemIcon>
                     <ListItemText 
                         align="left"
-                        primary={<Typography style={{fontSize:18}}>總共筆數: {datas[2]}</Typography>}
+                        primary={<Typography style={{fontSize:18}}>總共筆數: {datas['total_data']}</Typography>}
                     />
                 </ListItem>
 

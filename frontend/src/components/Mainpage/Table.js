@@ -10,7 +10,15 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
 
-import { list_example } from '../../test_data';
+import { gettableinfo } from '../../axios/Mainpage';
+
+const rows_example = [
+  {
+  data: "",
+  status: "X",
+  rank: 0
+  },
+]
 
 const columns = [
   { id: 'data', label: 'Data', minWidth: 170 },
@@ -27,7 +35,13 @@ const columns = [
 const StickyHeadTable=() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = React.useState(list_example)
+  const [rows, setRows] = React.useState(rows_example)
+
+  React.useEffect( async()=>{
+
+    const data = await gettableinfo()
+    setRows(data)
+  },[])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

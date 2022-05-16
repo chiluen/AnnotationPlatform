@@ -11,27 +11,49 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import { review_example } from '../../test_data';
+import { postreviewtext, getreviewtext } from '../../axios/Review';
+
+//import { review_example } from '../../test_data';
+
+const review_example = {
+    remain: 0,
+    data: "",
+    classification: "Positive"
+}
 
 var index = 0; // for testing
 
 const ReviewBox = ()=> {
 
-  const [data, setData] = React.useState(review_example[index].data)
-  const [classification, setClassification] = React.useState(review_example[index].classification)
-  const [remain, setRemain] = React.useState(review_example[index].remain)
+  const [data, setData] = React.useState(review_example.data)
+  const [classification, setClassification] = React.useState(review_example.classification)
+  const [remain, setRemain] = React.useState(review_example.remain)
 
-  //一共有skip, positive, neurtal, negative四種選項，先回傳給DB，然後再改變文章
-  const changeText = (decision) =>{
-    /**
-     Todo:
-     send decision to the backend and receive new data
-    */
-    index = (index+1) % 3;
-    setData(review_example[index].data);
-    setRemain(review_example[index].remain)
-    setClassification(review_example[index].classification)
-    console.log(decision)
+
+  React.useEffect(()=>{
+    getText('init')
+    console.log("enter use effect")
+  },[])
+
+  const getText = async (decision) =>{
+    if(decision === 'init' || decision === 'skip'){
+        const new_data = await getreviewtext()
+        setData(new_data.data)
+        setRemain(new_data.remain)
+        setClassification(new_data.classification)
+    }
+    else{ //星星個數
+        //先post, 再get
+        const payload = { //這邊之後改成傳data ID或許比較好, 傳data太慢了
+            data: data,
+            decision: decision
+        }
+        await postreviewtext(payload)
+        const new_data = await getreviewtext()
+        setData(new_data.data)
+        setRemain(new_data.remain)
+        setClassification(new_data.classification)
+    }
   }
 
   const anootationIcon = (classification)=>{
@@ -62,7 +84,7 @@ const ReviewBox = ()=> {
         </Grid>
         <Grid item xs={2} >
             <Paper sx={{ width: '100%', height:'60px', overflow: 'hidden', display: 'flex', justifyContent: "center" , alignItems: "center"}}>
-                <IconButton aria-label="delete" onClick={()=>{changeText("skip")}}>
+                <IconButton aria-label="delete" onClick={()=>{getText("skip")}}>
                     SKIP <SkipNextIcon/>
 
                 </IconButton>
@@ -85,7 +107,7 @@ const ReviewBox = ()=> {
         </Grid>
         <Grid item xs={12}>
             <Paper elevation={5}  xs={4} sx={{ width: '100%', height:'5rem', overflow: 'auto', padding: "20px 20px 20px 20px", display: 'flex', justifyContent: "center" , alignItems: "center"}}>
-                <Rating onChange={(_, value)=>{changeText(value)}}/>
+                <Rating onChange={(_, value)=>{getText(value)}}/>
             </Paper>
         </Grid>
         

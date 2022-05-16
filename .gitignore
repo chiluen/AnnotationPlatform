@@ -8,5 +8,4 @@ yarn-error.log*
 .env
 .env.swp
 __pycache__/
-ChineseSequenceClassification/
 

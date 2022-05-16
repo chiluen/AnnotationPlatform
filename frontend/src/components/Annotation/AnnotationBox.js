@@ -13,27 +13,53 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import { annotation_example } from '../../test_data';
+import { postannotationtext, getannotationtext } from '../../axios/Annotation';
 
-var index = 0; // for testing
-
+const annotation_example = {
+    remain: 0,
+    data: ""
+}
 
 const AnnotationBox = ()=> {
 
-  const [data, setData] = React.useState(annotation_example[index].data)
-  const [remain, setRemain] = React.useState(annotation_example[index].remain)
+  const [data, setData] = React.useState(annotation_example.data)
+  const [remain, setRemain] = React.useState(annotation_example.remain)
+
+  React.useEffect(()=>{
+    getText('init')
+    console.log("enter use effect")
+  },[])
+
+  const getText = async (decision) =>{
+    if(decision === 'init' || decision === 'skip'){
+        const data = await getannotationtext()
+        setData(data.data)
+        setRemain(data.remain)
+    }
+    else{
+        //先post, 再get
+        const payload = { //這邊之後改成傳data ID或許比較好, 傳data太慢了
+            data: data,
+            decision: decision
+        }
+        console.log(payload)
+        await postannotationtext(payload)
+        const new_data = await getannotationtext()
+        setData(new_data.data)
+        setRemain(new_data.remain)
+    }
+  }
 
   //一共有skip, positive, neurtal, negative四種選項，先回傳給DB，然後再改變文章
-  const changeText = (decision) =>{
-    /**
-     Todo:
-     send decision to the backend and receive new data
-    */
-    index = (index+1) % 3;
-    setData(annotation_example[index].data);
-    setRemain(annotation_example[index].remain)
-    console.log("here")
-  }
+//   const changeText = (decision) =>{
+//     /**
+//      send decision to the backend and receive new data
+//     */
+//     index = (index+1) % 3;
+//     setData(annotation_example[index].data);
+//     setRemain(annotation_example[index].remain)
+//     console.log("here")
+//   }
 
   return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 1 }} >
@@ -50,7 +76,7 @@ const AnnotationBox = ()=> {
         </Grid>
         <Grid item xs={2} >
             <Paper sx={{ width: '100%', height:'60px', overflow: 'hidden', display: 'flex', justifyContent: "center" , alignItems: "center"}}>
-                <IconButton aria-label="delete" onClick={()=>{changeText("skip")}}>
+                <IconButton aria-label="delete" onClick={()=>{getText("skip")}}>
                     SKIP <SkipNextIcon/>
 
                 </IconButton>
@@ -67,9 +93,9 @@ const AnnotationBox = ()=> {
             </Paper>
             <Paper elevation={5}sx={{ width: '100%' }}> 
                 <BottomNavigation showLabels>
-                        <BottomNavigationAction label="Positive" icon={<SentimentSatisfiedAltIcon />}     onClick={()=>{changeText("Positive")}} />
-                        <BottomNavigationAction label="Neutral"  icon={<SentimentNeutralIcon />}          onClick={()=>{changeText("Neutral")}}/>
-                        <BottomNavigationAction label="Negative" icon={<SentimentVeryDissatisfiedIcon />} onClick={()=>{changeText("Negative")}}/>
+                        <BottomNavigationAction label="Positive" icon={<SentimentSatisfiedAltIcon />}     onClick={()=>{getText("Positive")}} />
+                        <BottomNavigationAction label="Neutral"  icon={<SentimentNeutralIcon />}          onClick={()=>{getText("Neutral")}}/>
+                        <BottomNavigationAction label="Negative" icon={<SentimentVeryDissatisfiedIcon />} onClick={()=>{getText("Negative")}}/>
                 </BottomNavigation>
             </Paper>
         </Grid>
