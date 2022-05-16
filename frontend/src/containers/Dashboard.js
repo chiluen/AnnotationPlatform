@@ -19,9 +19,6 @@ import Annotation from './Annotation';
 import Review from './Review';
 import DB from './DB';
 
-// import Page2 from './Page2';
-// import Page3 from './Page3';
-
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {

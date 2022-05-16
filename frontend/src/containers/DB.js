@@ -3,14 +3,10 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import StickyHeadTable from '../components/DB/Table';
 
 
 const DB = ()=>{
-
-    
-
 
     return(
         <Box
