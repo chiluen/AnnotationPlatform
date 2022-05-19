@@ -22,10 +22,11 @@ const SignIn = (props) => {
     
     if (email === login_data.email && password === login_data.password){
       alert("Welcome");
+      // props.func(username);
       props.func(email);
     }
     else
-      alert("Wrong email or password")
+      alert("Wrong username or password")
   };
 
   const [values, setValues] = React.useState({
@@ -42,29 +43,33 @@ const SignIn = (props) => {
   };
 
   return (
-    <div className="card_container" align='center'>
-        <div className="card_center">
-          <div className="input_content">
-            <h3>帳號</h3>
-            <div className='password-content'>
-                <input type="text" value={email} placeholder="Email" onChange={(e) => setEmail(e.target.value)} className="inputbar"/>
+    <div className="backscreen">
+      <div className='screen'>
+        <div className="card_container" align='center'>
+            <div className="card_center">
+              <div className="input_content">
+                <h4>使用者名稱</h4>
+                <div className='password-content'>
+                    <input type="text" value={email} placeholder="Username" onChange={(e) => setEmail(e.target.value)} className="inputbar"/>
+                  </div>
               </div>
-          </div>
-          <p></p>
-          <div className="input_content">
-            <h3>密碼</h3>
-              <div className='password-content'>
-                <input type={values.showPassword ? "text" : "password"} value={password} placeholder="Password" 
-                onChange={(e) => setPassword(e.target.value)} className="inputbar"/>
-                <button className='eye' onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
-                  {values.showPassword ? <VisibilityIcon size='20px'/> : <VisibilityOffIcon size='20px'/>}
-                </button>
+              <p></p>
+              <div className="input_content">
+                <h4>密碼</h4>
+                  <div className='password-content'>
+                    <input type={values.showPassword ? "text" : "password"} value={password} placeholder="Password" 
+                    onChange={(e) => setPassword(e.target.value)} className="inputbar"/>
+                    <button className='eye' onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
+                      {values.showPassword ? <VisibilityIcon size='20px'/> : <VisibilityOffIcon size='20px'/>}
+                    </button>
+                  </div>
               </div>
-          </div>
-          <div align="center">
-            <button className="submit" onClick={callLoginApi}>登入</button><br/>
-          </div>
-        </div>                             
+              <div align="center">
+                <button className="submit" onClick={callLoginApi}>登入</button><br/>
+              </div>
+            </div>                            
+        </div>
+      </div>
     </div>
   );
 

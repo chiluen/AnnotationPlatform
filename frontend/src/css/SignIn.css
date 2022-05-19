@@ -5,6 +5,17 @@
     justify-content: center; 
     margin-top: 4em;
 }
+.backscreen{
+    /* background-color: lightgray; */
+    background: #FFEEDD;
+    background: linear-gradient(135deg, #FFF4C1 0%, #FFBD9D 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    /* background-image: url('https://unsplash.it/1366/768?image=568'); */
+}
 .title{
     color: var(--theme-dark-purple);
 
@@ -46,14 +57,16 @@
     width: 30em;
     height:20em;
     border-radius: 0.5em;
-    box-shadow: 0px 1px 2.5px 1px #dadada;
+    /* box-shadow: 1px 1px 0px 2px #dadada; */
+    box-shadow: 2px 2px 0px 3px #FFE4CA;
     padding: 0.8em;
     margin: 5em 5em 1em 1em;
     flex-direction: column;
     transform: translate(20px, 20px);
     float:left;
     text-align:left;
-    background-color: #ffffff;
+    background-color: #FFFAF4	;
+    opacity: .75;
 }
 
 .password-content{

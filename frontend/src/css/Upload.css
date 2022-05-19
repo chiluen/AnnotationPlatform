@@ -1,0 +1,50 @@
+.notice{
+    white-space: pre-line;
+    flex-direction: column;
+}
+
+.IconButton{
+    flex-direction: column;
+}
+
+.uploadPaper{
+    margin: "0px 0px 0px 20px";
+}
+
+.input_content{
+    flex-direction: row;
+    align-items: left;
+    
+}
+.comment_content{
+    margin: 20px 0px 0px 20px;
+    display: left;
+    flex-direction: column;
+    justify-content: left; 
+    position: absolute;
+}
+
+.inputbar{
+    width: 60%;
+    border-radius: 0.3em;
+    height: 2.5em;
+    display:flex;
+    flex-direction: column;
+    justify-content:left;
+    float:left;
+}
+
+.check{
+    white-space: pre-line;
+    flex-direction: column;
+    line-height: 2.5;
+}
+
+/* .notice1{
+    white-space: pre-line;
+}
+
+.br{
+    display: block;
+    margin: 3px 0;
+} */
