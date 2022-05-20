@@ -9,8 +9,11 @@ import Piegraph from '../components/Mainpage/Piegraph';
 import Bargraph from '../components/Mainpage/Bargraph';
 import DbInfo from '../components/Mainpage/DbInfo';
 import StickyHeadTable from '../components/Mainpage/Table';
+import { NameContext } from '../App';
 
 const Mainpage = ()=>{
+    const user = React.useContext(NameContext);
+    
     return(
         <Box
         component="main"
@@ -35,8 +38,8 @@ const Mainpage = ()=>{
                   height: 490,
                   width: 350
                 }}
-              >
-                <Usercard/> 
+              > 
+                <Usercard user={user}/> 
               </Paper>
             </Grid>
 

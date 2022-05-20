@@ -13,15 +13,11 @@ import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDiss
 
 import { postreviewtext, getreviewtext } from '../../axios/Review';
 
-//import { review_example } from '../../test_data';
-
 const review_example = {
     remain: 0,
     data: "",
     classification: "Positive"
 }
-
-var index = 0; // for testing
 
 const ReviewBox = ()=> {
 
@@ -68,7 +64,6 @@ const ReviewBox = ()=> {
     }
   }
   
-
   return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 1 }} >
         
@@ -110,9 +105,6 @@ const ReviewBox = ()=> {
                 <Rating onChange={(_, value)=>{getText(value)}}/>
             </Paper>
         </Grid>
-        
-        
-        
     </Grid>
   );
 }

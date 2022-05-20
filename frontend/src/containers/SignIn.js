@@ -3,30 +3,36 @@ import * as React from 'react';
 import { useState } from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
-import { login_data } from '../test_data';
-
-/* 
-Todo:
-建立一個api 跟後端聯繫並且獲得information
-
-*/
+import Link from '@mui/material/Link';
+import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
+import { getsigninresult } from '../axios/Signin';
 
 const SignIn = (props) => {
-  const [email, setEmail] = useState("");
+  const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
 
   //登入
   const callLoginApi = async (e) => {
     e.preventDefault();
-    
-    if (email === login_data.email && password === login_data.password){
-      alert("Welcome");
-      // props.func(username);
-      props.func(email);
+
+    const payload = { 
+      user: user,
+      password: password
     }
-    else
-      alert("Wrong username or password")
+
+    const login_info = await getsigninresult(payload)
+    
+    if (login_info.result){
+      props.func("dashboard");
+      props.func_2(user)
+      alert("歡迎使用Annotation Platform!");
+    }
+    else{
+      setUser("")
+      setPassword("")
+      alert("用戶名稱或密碼錯誤")
+    }
   };
 
   const [values, setValues] = React.useState({
@@ -50,7 +56,7 @@ const SignIn = (props) => {
               <div className="input_content">
                 <h4>使用者名稱</h4>
                 <div className='password-content'>
-                    <input type="text" value={email} placeholder="Username" onChange={(e) => setEmail(e.target.value)} className="inputbar"/>
+                    <input type="text" value={user} placeholder="Username" onChange={(e) => setUser(e.target.value)} className="inputbar"/>
                   </div>
               </div>
               <p></p>
@@ -64,15 +70,25 @@ const SignIn = (props) => {
                     </button>
                   </div>
               </div>
-              <div align="center">
-                <button className="submit" onClick={callLoginApi}>登入</button><br/>
+              <div>
+                <br/>
+                <Box   display="flex" justifyContent="center" alignItems="center">
+                  <Button     style={{color: 'black', backgroundColor: "#FFEEDD"}}variant="contained"onClick={callLoginApi} >登入</Button>
+                </Box>
+                <br/>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <Link component="button" variant="body2"
+                    onClick={() => {
+                      props.func("register");;
+                    }}
+                  >{'註冊'}</Link>
+                </Box>
               </div>
-            </div>                            
+            </div>                        
         </div>
       </div>
     </div>
   );
-
 }
 export default SignIn ;
 

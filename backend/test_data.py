@@ -1,3 +1,22 @@
+
+user_list = [
+    {
+        "user": "adminn",
+        "password": "adminn",
+        "numberOfUpload": 20,
+        "numberOfReview": 10,
+        "reviewRank": 4
+    },
+    {
+        "user": "leo",
+        "password": "leo",
+        "numberOfUpload": 30,
+        "numberOfReview": 5,
+        "reviewRank": 2
+    }
+]
+
+# need to delete
 user_data = {
     "name": "leooo",
     "numberOfUpload": 20,

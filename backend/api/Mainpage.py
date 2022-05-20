@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 import json
 
-from test_data import user_data, finish_data, dbstat_data, pieinfo_data, tableinfo_data #test data
+from test_data import user_list, finish_data, dbstat_data, pieinfo_data, tableinfo_data #test data
 
 
 #-----API Construction-----#
@@ -12,11 +12,15 @@ mainpageApi = Blueprint('mainpageApi', __name__)
 @mainpageApi.route('userprofile', methods=['GET'])
 def returnUserprofile():
     user = request.args['user']
-    print(user)
+    
     """
     連接DB, 拿到user information
     """
-    return user_data
+
+    for d in user_list:
+        if d["user"] == user:
+            print(d)
+            return d
 
 
 @mainpageApi.route('finishinfo', methods=['GET'])

@@ -1,12 +1,12 @@
 import instance from './api'
 
-const getuserprofile = async (user)=>{
-    const {data:{name,
+const getuserprofile = async (name)=>{
+    const {data:{user,
                  numberOfUpload,
                  numberOfReview,
-                 reviewRank}} = await instance.get('/mainpage/userprofile', {params:{ user:user }});
+                 reviewRank}} = await instance.get('/mainpage/userprofile', {params:{ user:name }});
     
-    return {name, numberOfUpload, numberOfReview, reviewRank}
+    return {user, numberOfUpload, numberOfReview, reviewRank}
 }
 
 const getfinishpercentage = async ()=>{

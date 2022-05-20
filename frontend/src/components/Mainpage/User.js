@@ -10,25 +10,24 @@ import GradingIcon from '@mui/icons-material/Grading';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import Rating from '@mui/material/Rating';
 
-/*
-要串接signin所得到的username, 放到這邊的getuserprofile
-*/
-
-var user_name_from_signin = "leo"
-
-const Usercard = ()=>{
+const Usercard = (props)=>{
     const [name, setName] = React.useState("")
     const [numberOfUpload, setNumberOfUpload] = React.useState(0)
     const [numberOfReview, setNumberOfReview] = React.useState(0)
     const [reviewRank, setReviewRank] = React.useState(1)
 
     React.useEffect( async () => {
-        const {name, numberOfUpload, numberOfReview, reviewRank} = await getuserprofile(user_name_from_signin)
-        setName(name)
+        if(!props.user){ //這個很重要，因為useEffect在props initialize以前就會啟動
+            return
+        }
+        const {user, numberOfUpload, numberOfReview, reviewRank} = await getuserprofile(props.user)
+        setName(user)
         setNumberOfUpload(numberOfUpload)
         setNumberOfReview(numberOfReview)
         setReviewRank(reviewRank)
-    },[]);
+    },[props.user]);
+    
+    
     
     return(
         <Card sx={{ maxWidth: 400 , maxHeight: 400, height: 300}}>

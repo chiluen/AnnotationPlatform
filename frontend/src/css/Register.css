@@ -21,25 +21,9 @@
 
 }
 .input_content{
-    margin: 1em 8em;
+    margin: 1em 10em;
     display: flex;
     flex-direction: column;
-}
-
-.submit{
-    border: lightgrey solid 0.15em;
-    border-radius: 0.2em;
-    background-color: var(--theme-purple);
-    color: black;
-    margin: 1em 14.5em;
-    width: 5em;
-    height: 1.8em;
-    font-size: 1.0em;
-    font-weight: 700;
-    text-align: center;
-    float:left;
-    flex-direction: row;
-    cursor: pointer; 
 }
 
 .register{
@@ -47,37 +31,36 @@
     border-radius: 0.2em;
     background-color: var(--theme-purple);
     color: black;
-    margin: -43px 12em;
+    margin: 16px 17.5em;
     width: 5em;
     height: 1.8em;
     font-size: 1.0em;
     font-weight: 700;
-    display: 'flex';
-    justify-content: 'center';
     text-align: center;
+    float:right;
     flex-direction: row;
     cursor: pointer; 
 }
 
 .inputbar{
-    width: 90%;
+    width: 95%;
     border-radius: 0.3em;
     height: 2.5em;
     display:flex;
     flex-direction: column;
-    justify-content:left;
-    float:left;
+    justify-content:center;
+    float:center;
     /* margin-left: 1em; */
     margin-top: 5px;
 }
 .card_center {
-    width: 35em;
-    height:25em;
+    width: 40em;
+    height:30em;
     border-radius: 0.5em;
     /* box-shadow: 1px 1px 0px 2px #dadada; */
     box-shadow: 2px 2px 0px 3px #FFE4CA;
     padding: 0.8em;
-    margin: 3em 5em 1em 1em;
+    margin: 0em 5em 1em 1em;
     flex-direction: column;
     transform: translate(20px, 20px);
     float:left;
@@ -96,23 +79,22 @@
 .eye{
     background: none;
     border-width: 0;
-    margin-left: 285px;
+    margin-left: 315px;
     position: absolute;
     margin-top: 1em;
 }
 
-.registerText{
-    /* float: left; */
+/* .registerText{
+    float: left;
     justify-content: center; 
     margin-top: 9.5em;
     position: absolute;
-    /* display: flex; */
-    /* flex-direction: row; */
+    display: flex;
+    flex-direction: row;
     text-align: center;
+} */
 
-}
-
-.text{
+/* .text{
     margin-left: 12rem;
     flex-direction: row; 
     margin-top: 20px;
@@ -125,11 +107,7 @@
     margin-left: 26em;
     flex-direction: row;
     white-space: pre-line;
-    /* margin-top: 5em; */
-}
-
-/* .registerPart{
-    flex-direction: row; 
 } */
+
 
 

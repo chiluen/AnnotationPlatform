@@ -5,7 +5,7 @@ This file is for testing frontend application
 
 // login data
 var login_data = {
-    email: "leo",
+    user: "leo",
     password: "leo"
 };
 

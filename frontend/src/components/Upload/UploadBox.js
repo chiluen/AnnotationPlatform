@@ -1,9 +1,5 @@
-// import * as React from 'react';
-// import axios from 'axios';
-// import React,{Component} from 'react';
 import {useRef } from 'react';
 import { useState } from "react";
-// import { useState } from "react";
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Title from './Title';
@@ -14,6 +10,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import CardContent from '@mui/material/CardContent';
 import AddIcon from '@mui/icons-material/Add';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+
+import { postfile } from '../../axios/Upload';
 
 const UploadBox = ()=> {
     const [files,setFiles] = useState("");
@@ -26,9 +24,15 @@ const UploadBox = ()=> {
 
     const changeHandler = (event) => {
         event.preventDefault();
+        console.log(event.target.files)
 		setFiles(event.target.files[0]);
 	};
-    const submitHandler = (event) => {
+    const submitHandler = async (event) => {
+        
+        const data = new FormData() 
+        data.append('file', files)
+        const result = await postfile(data)
+
         let dt = new Date().toLocaleDateString();
         setDate(dt);
         let time = new Date().toLocaleTimeString();
@@ -143,7 +147,7 @@ const UploadBox = ()=> {
                             {/* </div> */}
                             <Paper sx={{ width: '25%', height:'50px',overflow: 'hidden', display: 'flex', justifyContent: "center" ,alignItems: "center",margin:"30px 0px 0px 70px"}}>
                                 <IconButton style={{ fontSize: '15px' }} onClick={submitHandler}>
-                                    submit <AddIcon/>
+                                    Submit <AddIcon/>
                                 </IconButton>
                                 {/* <button className='Btn SurveyOptionBtn' onClick={()=>inputFile.current.click()}>選擇檔案</button> */}
                             </Paper>
