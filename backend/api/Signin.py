@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 import json
 
 from test_data import user_list
@@ -21,6 +21,8 @@ def varifysignin():
     
     for d in user_list:
         if d["user"] == request.args["user"] and d["password"] == request.args["password"]:
+            session.clear()
+            session["user"] = request.args["user"]
             return {"result": True}
     return {"result": False}
     

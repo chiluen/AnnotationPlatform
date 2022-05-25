@@ -2,7 +2,7 @@ from flask import Blueprint, request
 import json
 from datetime import datetime
 
-from bigtable import get_bigtable
+from api.bigtable import get_bigtable
 from google.cloud.bigtable import row_filters
 from test_data import user_list
 
@@ -27,6 +27,8 @@ def register():
     for d in user_list:
         if d["user"] == data["user"]:
             return {"result": "repeat"}
+    if data["user"] == "already_annotated":
+        return {"result": "prohibited username"}
     
     timestamp = datetime.utcnow()
     row_key = data["user"]
