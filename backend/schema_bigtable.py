@@ -40,3 +40,6 @@ def initialize_bigtable(project_id, instance_id):
         table.create(column_families=column_families_auth)
     else:
         print(f"table auth already exists")
+
+if __name__ == '__main__':
+    initialize_bigtable('final-annotation', 'final-annotation')
