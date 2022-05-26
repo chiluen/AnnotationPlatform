@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 import json, csv
 from datetime import datetime
 
@@ -25,7 +25,7 @@ def updatedbforreview():
     data = request.files['file']
     # TODO: check if we have this 2 columns
     task_name = request.form['task_name']
-    description = request.form['description']
+    # description = request.form['description']
     uploader = session.get("user")
     timestamp = datetime.utcnow()
 
