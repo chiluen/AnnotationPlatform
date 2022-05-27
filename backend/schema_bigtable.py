@@ -38,8 +38,8 @@ def initialize_bigtable(project_id, instance_id):
     column_families_auth = {
         'information': max_version_rule_auth 
     }
-    if not table.exists():
-        table.create(column_families=column_families_auth)
+    if not table_auth.exists():
+        table_auth.create(column_families=column_families_auth)
     else:
         print(f"table auth already exists")
 
