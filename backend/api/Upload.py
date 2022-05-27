@@ -1,9 +1,11 @@
-from flask import Blueprint, request, session
+from flask import Blueprint, request, session, g
 import json, csv
 from datetime import datetime
 
 from api.bigtable import get_bigtable
 from google.cloud.bigtable import row_filters
+
+from constant import *
 
 
 def read_data(f):
@@ -22,16 +24,18 @@ def updatedbforreview():
     連接DB, 上傳這一個upload file
     """
     table = get_bigtable('annotation')
+    print(g.user)
+    print(session)
     data = request.files['file']
-    # TODO: check if we have this 2 columns
-    task_name = request.form['task_name']
+    # TODO: check if we have this 2 columns; update: add tag
+    # task_name = request.form['task_name']
     # description = request.form['description']
-    uploader = session.get("user")
+    uploader = request.args['user']
     timestamp = datetime.utcnow()
 
-    corpus = data.readlines()
-    for i, sentence in enumerate(corpus):
-        row_key = f'{uploader}#{task_name}#{i}'
+    for i, sentence in enumerate(data):
+        sentence = sentence.decode()
+        row_key = f'{uploader}#{hash(sentence)}'
         row = table.direct_row(row_key)
         row.set_cell('text', 'text', sentence, timestamp)
         row.set_cell('annotation', 'already_annotated', 0, timestamp)
