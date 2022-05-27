@@ -41,5 +41,14 @@ def updatedbforreview():
         row.set_cell('annotation', 'already_annotated', 0, timestamp)
 
         row.commit()
+
+    # update information of auth table
+    auth_table = get_bigtable('auth')
+    row = auth_table.read_row(uploader)
+    previous_num = int(row.cells['information']['upload_amount'][-1].values)
+    new_num = int(previous_num.values.decode()) + len(data) if previous_num else len(data)
+    
+    row = table.direct_row(uploader)
+    row.set_cell('information', 'upload_amount', new_num, timestamp)
     
     return "Nothing"
