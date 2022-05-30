@@ -24,15 +24,15 @@ def updatedbforreview():
     連接DB, 上傳這一個upload file
     """
     table = get_bigtable('annotation')
-    print(g.user)
-    print(session)
     data = request.files['file']
     # TODO: check if we have this 2 columns; update: add tag
     # task_name = request.form['task_name']
     # description = request.form['description']
-    uploader = request.args['user']
+    # uploader = request.args['user']
+    uploader = 'leo'
     timestamp = datetime.utcnow()
-
+    
+    upload_volume = 0
     for i, sentence in enumerate(data):
         sentence = sentence.decode()
         row_key = f'{uploader}#{hash(sentence)}'
@@ -41,14 +41,23 @@ def updatedbforreview():
         row.set_cell('annotation', 'already_annotated', 0, timestamp)
 
         row.commit()
+        upload_volume += 1
 
     # update information of auth table
     auth_table = get_bigtable('auth')
-    row = auth_table.read_row(uploader)
-    previous_num = int(row.cells['information']['upload_amount'][-1].values)
-    new_num = int(previous_num.values.decode()) + len(data) if previous_num else len(data)
+    row_read = auth_table.read_row(uploader)
+    row_write = auth_table.direct_row(uploader)
+    # print_row(row_read)
+    # print(row_read.cells['information'])
+    try:
+        previous_num = int(row_read.cells['information'][b'upload_amount'][0].value.decode())
+        # print(previous_num)
+        new_num = previous_num + upload_volume
+    except KeyError:
+        new_num = upload_volume
     
-    row = table.direct_row(uploader)
-    row.set_cell('information', 'upload_amount', new_num, timestamp)
+    # print(new_num)
+    row_write.set_cell('information', 'upload_amount', str(new_num), timestamp)
+    row_write.commit()
     
     return "Nothing"
