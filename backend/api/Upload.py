@@ -1,5 +1,7 @@
-from flask import Blueprint, request, session, g
+import random
+import random
 import json, csv
+from flask import Blueprint, request, session, g
 from datetime import datetime
 
 from api.bigtable import get_bigtable
@@ -29,7 +31,7 @@ def updatedbforreview():
     # task_name = request.form['task_name']
     # description = request.form['description']
     # uploader = request.args['user']
-    uploader = 'leo'
+    uploader = random.choice(['leo', 'yus'])
     timestamp = datetime.utcnow()
     
     upload_volume = 0
@@ -38,7 +40,7 @@ def updatedbforreview():
         row_key = f'{uploader}#{hash(sentence)}'
         row = table.direct_row(row_key)
         row.set_cell('text', 'text', sentence, timestamp)
-        row.set_cell('annotation', 'already_annotated', 0, timestamp)
+        row.set_cell('annotation', 'already_annotated', str(0), timestamp)
 
         row.commit()
         upload_volume += 1
