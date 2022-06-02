@@ -21,7 +21,8 @@ def returntableinfo():
     [{data, status, rank}]
     """
     table = get_bigtable("annotation")
-    prefix = session.get("user") + '#'
+    prefix = 'leo' + '#'
+    # prefix = request.args['user'] + '#'
     end_key = prefix[:-1] + chr(ord(prefix[-1]) + 1)
     
     row_set = RowSet()
@@ -30,8 +31,8 @@ def returntableinfo():
     rows = table.read_rows(row_set=row_set)
     tableinfo_data = []
     for r in rows:
-        sentence = r.cells['text']['text']
-        status = r.cells['annotation'][1] if r.cells['annotation']['already_annotated'] else 'Not Graded'
+        sentence = r.cells['text'][b'text']
+        status = r.cells['annotation'][b'label'] if bool(r.cells['annotation'][b'already_annotated']) else 'Not Graded'
         rank = r.cells['validation'][1] if r.cells['annotation']['already_annotated'] else 0
         
         tableinfo_data.append({'data': sentence, 'status': status, 'rank': rank})
@@ -52,7 +53,3 @@ def returnselecttableinfo():
 
 
     return json.dumps(tableinfo_data[:5])
-
-
-
-

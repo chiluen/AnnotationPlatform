@@ -31,7 +31,7 @@ def updatedbforreview():
     # task_name = request.form['task_name']
     # description = request.form['description']
     # uploader = request.args['user']
-    uploader = random.choice(['leo', 'yus'])
+    uploader = 'leo' # random.choice(['leo', 'yus'])
     timestamp = datetime.utcnow()
     
     upload_volume = 0

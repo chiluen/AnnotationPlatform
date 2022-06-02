@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session
+from flask import Blueprint, request, session, g
 import json
 
 from test_data import user_list
@@ -23,7 +23,15 @@ def varifysignin():
     if not row:
         return {"result": False}
     elif request.args["password"] == row.cells['information'][b'password'][0].value.decode():
-        session.clear()
+        # session.clear()
+        print(request.args['user'])
         session["user"] = request.args["user"]
         return {"result": True}
     return {"result": False}
+
+# this is failed since we are not using the flask env totally
+@signinApi.before_app_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+    g.user = user_id
+
