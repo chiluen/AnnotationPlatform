@@ -1,4 +1,4 @@
-PROJECT_ID = 'final-annotation-351318'
+PROJECT_ID = 'final-annotation-352116'
 BIGTABLE_INSTANCE_ID = 'final-annotation'
 TABLE_ID_AUTH = 'auth'
 TABLE_ID_ANNOTATION = 'annotation'
@@ -16,9 +16,12 @@ def print_row(row):
                 print(
                     "\t{}: {} @{}{}".format(
                         col.decode("utf-8"),
-                        cell.value.decode("utf-8"),
+                        cell.value.decode(),
                         cell.timestamp,
                         labels,
                     )
                 )
     print("")
+
+def it_count(iterator):
+    return sum(i for i in iterator)
