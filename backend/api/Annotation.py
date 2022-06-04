@@ -14,15 +14,6 @@ from api.bigtable import get_bigtable
 #-----API Construction-----#
 annotationApi = Blueprint('annotationApi', __name__)
 
-#-----GCP account info-----#
-# project_id = "annotation-project-351010"
-# instance_id = "finalproject"
-# table_id = "uploadtb"
-
-#-----connect to bigtable-----#
-# client = bigtable.Client(project=project_id, admin=True)
-# instance = client.instance(instance_id)
-# table = instance.table(table_id)
 
 #-----Routing Definition-----#
 @annotationApi.route('postannotation', methods=['POST'])
@@ -34,17 +25,25 @@ def updatedbforannotation():
     # print(request.data) #可以拿到�
     table = get_bigtable('annotation')
     column_family_id = "annotation".encode()
+
+    # capture request
     # annotator = request.args['user']
     request_data = json.loads(request.data.decode())
     annotator = "yus" # request.args['user']
-    row_key = b'leo#-7090039486239504920' # TODO: pass by requests
-    # f'leo#{hash(request_data["data"])}' # this should be passed by tokens
+    row_key = b'leo#finance#not_annotate#-7090039486239504920'.decode()
+    # TODO: pass by requests
     label = request_data['decision']
     timestamp = datetime.datetime.utcnow()
+    
+    uploader, tag, status, sentence_hash = row_key.decode().split("#")
+
+    # prepare input
+    row_key_write = f'{uploader}#{tag}#already_annotate#{annotator}#{label}#{sentence_hash}'
     row = table.row(row_key)
-    row.set_cell(column_family_id, annotator, label, timestamp)
+    row.set_cell(column_family_id, 'label', label, timestamp)
     row.set_cell(column_family_id, "already_annotated", str(1), timestamp)
     row.commit()
+
     return "Nothing"
 
 
@@ -61,7 +60,20 @@ def getannotation():
 
     # dont get annotator's query
     # TODO: it is not efficient to query all ~user data at each time
-    # bigtable has random row filter 
+    # bigtable has random row filter, using that will be faster 
+    condition = row_filters.RowFilterChain(
+        filters=[
+            row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
+            row_filters.RowKeyRegexFilter(f'^.*#not_annotate#.*$'.encode),
+        ]
+    )
+
+    rows_data = table.read_rows(
+        filter_=condition
+    )
+    
+    '''
+    # old version # select by value is not suitable for BT
     condition = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
@@ -79,15 +91,10 @@ def getannotation():
         )
     ) # RowData not Row
     '''
-    print(type(rows_data))
-    for row in rows_data:
-        print_row(row)
-    '''
     # len(rows_data.rows) returns 0
     # TODO: will O(N) influence
-    sentences = [
-        (r.row_key, r.cells["text"]["text".encode()][0].value.decode()) for r in rows_data
-    ]
+
+    sentences = [(r.row_key, r.cells["text"]["text".encode()][0].value.decode()) for r in rows_data]
     print('remain', len(sentences)) 
     print(sentences)
     selected = random.choice(sentences)

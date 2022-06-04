@@ -6,6 +6,8 @@ from api.bigtable import get_bigtable
 from google.cloud.bigtable import row_filters
 from test_data import user_list
 
+from constant import *
+
 
 #-----API Construction-----#
 registerApi = Blueprint('registerApi', __name__)
@@ -20,7 +22,7 @@ def register():
     table = get_bigtable('auth')
 
     # "already_annotated" will inject the bigtable cell, thus prohibit
-    if data["user"] == "already_annotated":
+    if data["user"] in PROHIBIT_NAMES:
         return {"result": "prohibited username"}
 
     test_row = table.read_row(data['user'])

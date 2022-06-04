@@ -20,7 +20,7 @@ def initialize_bigtable(project_id, instance_id):
     # TODO: design column family full picture
     column_family_id_text = 'text'
     column_family_id_annotation = 'annotation'
-    column_family_id_validation = 'validation'
+    column_family_id_validation = 'review'
     column_families = {
         column_family_id_text: max_version_rule,
         column_family_id_annotation: max_version_rule,

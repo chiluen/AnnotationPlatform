@@ -30,14 +30,14 @@ def updatedbforreview():
     # TODO: check if we have this 2 columns; update: add tag
     # task_name = request.form['task_name']
     # description = request.form['description']
-    # uploader = request.args['user']
-    uploader = 'leo' # random.choice(['leo', 'yus'])
+    uploader = 'leo' # request.args['user']
+    tag = 'finance' # request.args['tag']
     timestamp = datetime.utcnow()
     
     upload_volume = 0
     for i, sentence in enumerate(data):
         sentence = sentence.decode()
-        row_key = f'{uploader}#{hash(sentence)}'
+        row_key = f'{uploader}#{tag}#not_annotate#{hash(sentence)}'
         row = table.direct_row(row_key)
         row.set_cell('text', 'text', sentence, timestamp)
         row.set_cell('annotation', 'already_annotated', str(0), timestamp)
