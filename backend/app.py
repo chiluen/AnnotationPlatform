@@ -11,6 +11,14 @@ from api.Upload import uploadApi
 app = Flask(__name__)
 CORS(app)
 
+app.config.from_mapping(
+    SECRET_KEY='dev',
+    GCLOUD_PROJECT_ID='final-annotation-351318',
+    BIGTABLE_INSTANCE_ID='final-annotation',
+    BIGTABLE_AUTH_ID='auth',
+    BIGTABLE_ANNOTATION_ID='annotation',
+)
+
 #-----Register different API-----#
 app.register_blueprint(mainpageApi, url_prefix='/mainpage')
 app.register_blueprint(dbApi, url_prefix='/db')

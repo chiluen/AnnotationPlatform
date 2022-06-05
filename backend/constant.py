@@ -1,0 +1,28 @@
+PROJECT_ID = 'final-annotation-352116'
+BIGTABLE_INSTANCE_ID = 'final-annotation'
+TABLE_ID_AUTH = 'auth'
+TABLE_ID_ANNOTATION = 'annotation'
+TAGS = ["finance", "science", "other", "technology", "sports"]
+PROHIBIT_NAMES = ["already_annotate", "already_review", "not_annotate"] + TAGS
+
+def print_row(row):
+    print("Reading data for {}:".format(row.row_key.decode("utf-8")))
+    for cf, cols in sorted(row.cells.items()):
+        print("Column Family {}".format(cf))
+        for col, cells in sorted(cols.items()):
+            for cell in cells:
+                labels = (
+                    " [{}]".format(",".join(cell.labels)) if len(cell.labels) else ""
+                )
+                print(
+                    "\t{}: {} @{}{}".format(
+                        col.decode("utf-8"),
+                        cell.value.decode(),
+                        cell.timestamp,
+                        labels,
+                    )
+                )
+    print("")
+
+def it_count(iterator):
+    return sum(i for i in iterator)

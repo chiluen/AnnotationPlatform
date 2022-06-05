@@ -1,12 +1,9 @@
 import instance from './api'
 
-const postfile = async (payload)=>{
-    const data = await instance.post('upload/upload', payload)
+const postfile = async (payload, category,user)=>{
+    console.log(payload)
+    console.log(category)
+    const data = await instance.post('upload/upload', payload, {params:{category:category, user:user}})
 }
 
-const postselecttableinfo = async (category)=>{
-    const data = await instance.post('upload/posttableinfo', {params:{category:category}})
-    // return data.data
-}
-
-export {postfile,postselecttableinfo}
+export {postfile}

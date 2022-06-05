@@ -21,8 +21,10 @@ import InputLabel from '@mui/material/InputLabel';
 import { gettableinfo, getselecttableinfo } from '../../axios/DB';
 
 const columns = [
+  { id: 'uploader', label: 'Uploader', minWidth:170},
   { id: 'data', label: 'Data', minWidth: 170 },
   { id: 'status', label: 'Positive/ Negative/ Neutral/ Not Graded', minWidth: 100 },
+  { id: 'category', label: 'Category', minWidth:170},
   {
     id: 'rank',
     label: 'Review Quality',
@@ -142,11 +144,17 @@ const StickyHeadTable=() => {
                 .map((row) => {
                     return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                        <TableCell key='uploader' align='left'>
+                            {row['uploader']}
+                        </TableCell>
                         <TableCell key='data' align='left'>
                             {row['data']}
                         </TableCell>
                         <TableCell key='status' align='left'>
                             {row['status']}
+                        </TableCell>
+                        <TableCell key='category' align='left'>
+                            {row['tag']}
                         </TableCell>
                         <TableCell key='rank' align='right'>
                             <Rating value={Number(row['rank'])} readOnly />

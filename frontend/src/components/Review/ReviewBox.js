@@ -13,6 +13,8 @@ import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDiss
 
 import { postreviewtext, getreviewtext } from '../../axios/Review';
 
+import { NameContext } from '../../App';
+
 const review_example = {
     remain: 0,
     data: "",
@@ -24,28 +26,32 @@ const ReviewBox = ()=> {
   const [data, setData] = React.useState(review_example.data)
   const [classification, setClassification] = React.useState(review_example.classification)
   const [remain, setRemain] = React.useState(review_example.remain)
+  const [key, setKey] = React.useState()
+
+  const user = React.useContext(NameContext);
 
 
   React.useEffect(()=>{
     getText('init')
-    console.log("enter use effect")
   },[])
 
   const getText = async (decision) =>{
     if(decision === 'init' || decision === 'skip'){
-        const new_data = await getreviewtext()
+        const new_data = await getreviewtext(user)
         setData(new_data.data)
         setRemain(new_data.remain)
         setClassification(new_data.classification)
+        setKey(new_data.key)
     }
     else{ //星星個數
         //先post, 再get
         const payload = { //這邊之後改成傳data ID或許比較好, 傳data太慢了
             data: data,
-            decision: decision
+            decision: decision,
+            key: key
         }
-        await postreviewtext(payload)
-        const new_data = await getreviewtext()
+        await postreviewtext(payload, user)
+        const new_data = await getreviewtext(user)
         setData(new_data.data)
         setRemain(new_data.remain)
         setClassification(new_data.classification)

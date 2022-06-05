@@ -14,6 +14,8 @@ import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
 import { postannotationtext, getannotationtext } from '../../axios/Annotation';
+import { NameContext } from '../../App';
+
 
 const annotation_example = {
     remain: 0,
@@ -24,27 +26,29 @@ const AnnotationBox = ()=> {
 
   const [data, setData] = React.useState(annotation_example.data)
   const [remain, setRemain] = React.useState(annotation_example.remain)
+  const [key, setKey] = React.useState()
+  const user = React.useContext(NameContext);
 
   React.useEffect(()=>{
     getText('init')
-    console.log("enter use effect")
   },[])
 
   const getText = async (decision) =>{
     if(decision === 'init' || decision === 'skip'){
-        const data = await getannotationtext()
+        const data = await getannotationtext(user)
         setData(data.data)
         setRemain(data.remain)
+        setKey(data.key)
     }
     else{
         //先post, 再get
         const payload = { //這邊之後改成傳data ID或許比較好, 傳data太慢了
             data: data,
-            decision: decision
+            decision: decision,
+            key, key
         }
-        console.log(payload)
-        await postannotationtext(payload)
-        const new_data = await getannotationtext()
+        await postannotationtext(payload, user)
+        const new_data = await getannotationtext(user)
         setData(new_data.data)
         setRemain(new_data.remain)
     }

@@ -20,7 +20,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
-import { postfile, postselecttableinfo  } from '../../axios/Upload';
+import { postfile  } from '../../axios/Upload';
+import { NameContext } from '../../App';
 
 const constructSelect = (label, func, options)=>{
     return(
@@ -46,6 +47,8 @@ const UploadBox = ()=> {
     const [category, setcategory] = React.useState('');
     const inputFile = useRef(null) 
 
+    const user = React.useContext(NameContext);
+
     // const handleChange = (event) => {
     //     setCategory(event.target.value);
     // };
@@ -63,7 +66,7 @@ const UploadBox = ()=> {
         
         const data = new FormData() 
         data.append('file', files)
-        const result = await postfile(data)
+        const result = await postfile(data, category, user)
 
         // setAgree(true);
 
@@ -77,7 +80,7 @@ const UploadBox = ()=> {
         // }
         alert("upload success")
     
-        const categorydata = await postselecttableinfo(category)
+        //const categorydata = await postselecttableinfo(category)
     
 	};
   

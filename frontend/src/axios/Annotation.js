@@ -1,11 +1,12 @@
 import instance from './api'
 
-const postannotationtext = async (payload)=>{
-    const data = await instance.post('annotation/postannotation', payload)
+const postannotationtext = async (payload, user)=>{
+    const data = await instance.post('annotation/postannotation', payload, {params:{user:user}})
 }
 
-const getannotationtext = async ()=>{
-    const data = await instance.get('annotation/getannotation')
+const getannotationtext = async (user)=>{
+    
+    const data = await instance.get('annotation/getannotation', {params:{user:user}})
     return data.data
 }
 
