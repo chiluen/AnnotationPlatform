@@ -20,22 +20,40 @@ def returntableinfo():
     連接DB, 拿到table information (全部)
     [{data, status, rank}]
     """
-    table = get_bigtable("annotation")
-    prefix = 'leo' + '#'
-    # prefix = request.args['user'] + '#'
-    end_key = prefix[:-1] + chr(ord(prefix[-1]) + 1)
     
-    row_set = RowSet()
-    row_set.add_row_range_from_keys(prefix.encode("utf-8"), end_key.encode("utf-8"))
+    table = get_bigtable('annotation')
+    rows = table.read_rows(filter_=row_filters.PassAllFilter(True))
 
-    rows = table.read_rows(row_set=row_set)
-    tableinfo_data = []
+
+    # TODO: implement O(N) is kinda waste of time
+    tableinfo_data, example = {}, {'status': 'Not Graded', 'rank': 0}
     for r in rows:
-        sentence = r.cells['text'][b'text']
-        status = r.cells['annotation'][b'label'] if bool(r.cells['annotation'][b'already_annotated']) else 'Not Graded'
-        rank = r.cells['validation'][1] if r.cells['annotation']['already_annotated'] else 0
-        
-        tableinfo_data.append({'data': sentence, 'status': status, 'rank': rank})
+        row_name = r.row_key.decode()
+        row_name_elements = row_name.split('#')
+        uploader = row_name_elements[0]
+        tag = row_name_elements[1]
+        status = row_name_elements[2]
+        sentence_hash = row_name_elements[-1]
+
+        row_dict_key = '#'.join([uploader, tag, sentence_hash])
+        row_dict = tableinfo_data.get(row_dict_key, example.copy())
+
+        if status == 'not_annotate':
+            sentence =  r.cells['text'][b'text'][0].value.decode()
+            row_dict['data'] = sentence
+        elif status == 'already_annotate':
+            row_dict['status'] = r.cells['annotation'][b'label'][0].value.decode()
+        elif status == 'already_review':
+            rank = r.cells['review'][b'score'][0].value.decode()
+            try:
+                score = int(rank)
+            except ValueError:
+                score = 0
+            row_dict['rank'] = score
+
+        tableinfo_data[row_dict_key] = row_dict
+
+    tableinfo_data = [i for i in tableinfo_data.values()]
 
     return json.dumps(tableinfo_data)
 
@@ -50,6 +68,7 @@ def returnselecttableinfo():
     """
     連接DB, 並依據這三個條件對data做篩選
     """
+
 
 
     return json.dumps(tableinfo_data[:5])

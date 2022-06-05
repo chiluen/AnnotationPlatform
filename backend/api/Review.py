@@ -1,3 +1,4 @@
+import random
 from flask import Blueprint, request
 import json
 import datetime
@@ -19,18 +20,27 @@ def updatedbforreview():
     """
     連接DB, 更新目前的status
     """
-    # print(request.data) #可以拿到前端POST
-    column_family_id = "validation".encode()
-    row_key = "0#1#0"
-    annotator = "user0".encode()
-    score = 3
+    print(request.data) #可以拿到前端POST
+    table = get_bigtable('annotation') 
+    reviewer = 'shin' # request.data['user']
+    score = json.loads(request.data.decode())['decision']
+    row_key = b'leo#finance#already_annotate#yus#Neutral#-3347841054046219985'.decode() # request.data['key']
+
+    uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
+    row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
     timestamp = datetime.datetime.utcnow()
-    row = table.row(row_key)
-    row.set_cell(column_family_id, annotator, score, timestamp)
+    row = table.row(row_key_write)
+    row.set_cell('review', 'score', str(score), timestamp)
+    row.set_cell('review', 'already_review', str(1), timestamp)
     row.commit()
-    print("Successfully wrote row {}.".format(row_key))
+    print("Successfully wrote row {}.".format(row_key_write))
     return "Nothing"
 
+
+def get_text_row_key(annotation_row_key):
+    uploader, tag, status, annotator, label, hash_sent = annotation_row_key.split('#')
+    text_row_key = f'{uploader}#{tag}#not_annotate#{hash_sent}'
+    return text_row_key
 
 @reviewApi.route('getreview', methods=['GET'])
 def getreview():
@@ -41,24 +51,45 @@ def getreview():
     """
     #用新的會出事,可惡時間出錯了嗚嗚
     # reviwer should not be annotator or uploader
-    reviewer = 'cai' # request.args['user']
+    reviewer = 'shin' # request.args['user']
     table = get_bigtable('annotation')
-
-    condition_not_uploader = row_filters.RowFilterChain(
-        filters=[
-            row_filters.RowKeyRegexFilter(f'^(?:$|[^{reviewer}]).*$'.encode()),
-            row_filters.ColumnQualifierRegexFilter('already_annotated'),
-            row_filters.CellsColumnLimitFilter(1),
-            row_filters.ValueRegexFilter('^1$'.encode()),
-        ]    
-    )
-    condition_not_annotator = row_filters.RowFilterChain(
-        filters=[
-            row_filters.ColumnQualifier('annotator'),
-            row_filters.CellsColumnLimitFilter(1),
-            row_filters.ValueRegexFilter(),
-        ]
-    )
-
+   
+    # get those annotated
+    # the re2 regex did not support negate lookaround, I'm not sure what is here
+    # but small data testing looks fine (won't retrieve uploader and annotator's data)
+    regex_text_candidate = f'^(?:$|[^{reviewer}]).+?#.+?#already_annotate#(?:$|[^{reviewer}]).+?#.*$'
+    condition_candidate = row_filters.RowKeyRegexFilter(regex_text_candidate.encode())
+    rows_data = table.read_rows(filter_=condition_candidate)
     
-    return {"result": sentence,"key":key,"decision":label,"annotator":anno_list[len(anno_list)-1]}
+    # get those have been reviewed
+    regex_text_not_candidate = f'^(?:$|[^{reviewer}]).+?#.+?#already_review#(?:|[^{reviewer}]).+?#.*$'
+    condition_not_candidate = row_filters.RowKeyRegexFilter(regex_text_not_candidate.encode())
+    rows_data_not_candidate = table.read_rows(filter_=condition_not_candidate)
+    not_candidates = set([r.row_key.decode().split('#')[-1] for r in rows_data_not_candidate])
+
+    sentences = [r.row_key.decode() for r in rows_data]
+    sentences = [s for s in sentences if s.split('#')[-1] not in not_candidates]
+
+    texts = [table.read_row(get_text_row_key(s)).cells["text"][b"text"][0].value.decode() for s in sentences]
+
+    pairs = [(i, s) for i, s in zip(sentences, texts)]
+    
+    print(pairs)
+    print(not_candidates)
+
+    selected = random.choice(pairs)
+    row_key, sentence = selected[0], selected[1]
+    number_of_remain = len(pairs)
+    label = table.read_row(row_key).cells['annotation'][b'label'][0].value.decode()
+    
+
+    output = {
+        "remain": number_of_remain , 
+        "data": sentence, 
+        "classification": label,
+        "key": row_key
+    } 
+    
+    return output
+
+# return {"result": sentence,"key":key,"decision":label,"annotator":anno_list[len(anno_list)-1]}

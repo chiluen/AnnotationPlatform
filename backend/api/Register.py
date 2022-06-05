@@ -22,7 +22,7 @@ def register():
     table = get_bigtable('auth')
 
     # "already_annotated" will inject the bigtable cell, thus prohibit
-    if data["user"] in PROHIBIT_NAMES:
+    if data["user"] in PROHIBIT_NAMES or '#' in data["user"]:
         return {"result": "prohibited username"}
 
     test_row = table.read_row(data['user'])
