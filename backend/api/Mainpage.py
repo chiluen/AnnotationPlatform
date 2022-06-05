@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session
 import json
 from api.bigtable import get_bigtable
-from google.cloud.bigtable import row_filters
+from google.cloud.bigtable import row_filters 
 from google.cloud.bigtable.row_filters import RowKeyRegexFilter
 
 from test_data import user_list, finish_data, dbstat_data, pieinfo_data, tableinfo_data #test data
@@ -40,7 +40,8 @@ def returnUserprofile():
     """
     連接DB, 拿到user information
     """
-    user = request.args['user']
+    # user = request.args['user']
+    user = 'yus'
     upload_data_rows, annotate_data_rows, annotated_by_data_rows, review_data_rows, reviewed_by_data_rows, password = get_user_data_rows(user)
 
     d = {}
@@ -59,7 +60,8 @@ def returnFinishinfo():
     """
     連接DB, 拿到Fin
     """
-    user = request.args['user'] #TODO: no such TOKEN
+    # user = request.args['user'] #TODO: no such TOKEN
+    user = 'yus'
     upload_data_rows, annotate_data_rows, annotated_by_data_rows, review_data_rows, reviewed_by_data_rows, password = get_user_data_rows(user)
 
     d = {}
@@ -75,7 +77,8 @@ def returnDBstatistic():
     """
     連接DB, 拿到DB的統計資料
     """
-    user = request.args['user']
+    # user = request.args['user']
+    user = 'yus'
     table = get_bigtable('annotation')
 
     text_regtext = f'^.+?#^.+?#not_annotate#.+$'.encode()
@@ -94,12 +97,12 @@ def returnDBstatistic():
 
     # TODO: get all sentenece from db
     sentences = [r.cells[b'text'][0].values.decode().split() for r in text_rows]
-    avg_lens = sum([len(s) for s in sentences]) / len(sentences)
+    avg_lens = sum([len(s) for s in sentences]) / len(sentences) if len(sentences) > 0 else 0
     pos_amount = sum([1 for i in positive_rows])
 
     dbstat_data = dict()
-    dbstat_data['total_data'] = len(sentences) 
-    dbstat_data['positive_rate'] = pos_amount / len(sentences)
+    dbstat_data['total_data'] = len(sentences)
+    dbstat_data['positive_rate'] = pos_amount / len(sentences) if len(sentences) > 0 else 0
     dbstat_data['avg_wors'] = avg_lens
 
     return dbstat_data
@@ -111,7 +114,8 @@ def returnpieinfo():
     """
     連接DB, 拿到pie graph 所需資料
     """
-    user = request.args['user']
+    # user = request.args['user']
+    user = 'yus'
     result = []
     for i in range(6):
         positive_regtext = f'^{user}#.+?#already_review#.+?#.+?#.+?#{i}#.*$'.encode()
