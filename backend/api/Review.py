@@ -75,22 +75,28 @@ def getreview():
     sentences = [s for s in sentences if s.split('#')[-1] not in not_candidates]
 
     texts = [table.read_row(get_text_row_key(s)).cells["text"][b"text"][0].value.decode() for s in sentences]
+    
+    try:
+        pairs = [(i, s) for i, s in zip(sentences, texts)]
 
-    pairs = [(i, s) for i, s in zip(sentences, texts)]
-
-    selected = random.choice(pairs)
-    row_key, sentence = selected[0], selected[1]
-    number_of_remain = len(pairs)
-    label = table.read_row(row_key).cells['annotation'][b'label'][0].value.decode()
+        selected = random.choice(pairs)
+        row_key, sentence = selected[0], selected[1]
+        number_of_remain = len(pairs)
+        label = table.read_row(row_key).cells['annotation'][b'label'][0].value.decode()
     
 
-    output = {
-        "remain": number_of_remain , 
-        "data": sentence, 
-        "classification": label,
-        "key": row_key
-    } 
+        output = {
+            "remain": number_of_remain , 
+            "data": sentence, 
+            "classification": label,
+            "key": row_key
+        }
+    except IndexError:
+        output = {
+            "remain": 0,
+            "data": 'Well Done! There is no more data to review.',
+            "classification": "Positive",
+            "key": None
+        }
     
     return output
-
-# return {"result": sentence,"key":key,"decision":label,"annotator":anno_list[len(anno_list)-1]}

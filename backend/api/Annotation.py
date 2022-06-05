@@ -81,9 +81,16 @@ def getannotation():
 
     sentences = [(r.row_key.decode(), r.cells["text"]["text".encode()][0].value.decode()) for r in rows_data]
     sentences_not_select = set([r.row_key.decode().split('#')[-1] for r in rows_data_not_selected])
-    #print(sentences_not_select)
     sentences = [s for s in sentences if s[0].split('#')[-1] not in sentences_not_select]
-    selected = random.choice(sentences)
-    key, sentence = selected[0], selected[1]
-    # TODO: return one more key for recording
-    return {"data": sentence, "remain": len(sentences), "key": key}
+    try:
+        selected = random.choice(sentences)
+        key, sentence = selected[0], selected[1]
+        output = {"data": sentence, "remain": len(sentences), "key": key}
+    except IndexError
+        output = {
+            "data": "Well Done! That's enough for today!",
+            "remain": 0,
+            "key": None
+        }
+
+    return output
