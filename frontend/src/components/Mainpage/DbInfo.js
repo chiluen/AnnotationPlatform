@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { getdbstat } from '../../axios/Mainpage';
 
+import { NameContext } from '../../App';
+
 const db_sample = {
     avg_words:0,
     positive_rate:0,
@@ -14,12 +16,17 @@ const db_sample = {
 }
 
 const DbInfo = () => {
+    
     const [datas, setdatas] = React.useState(db_sample);
+    const user = React.useContext(NameContext);
 
     React.useEffect( async()=>{
-        const data = await getdbstat()
+        if(!user){ 
+            return
+          }
+        const data = await getdbstat(user)
         setdatas(data)
-    },[])
+    },[user])
 
     return (
         <div>
@@ -42,7 +49,7 @@ const DbInfo = () => {
                     </ListItemIcon>
                     <ListItemText 
                         align="left"
-                        primary={<Typography style={{fontSize:18}}>正向比例: {datas['positive_rate']}%</Typography>}
+                        primary={<Typography style={{fontSize:18}}>正向比例: {datas['positive_rate']}</Typography>}
                     />
                 </ListItem>
                 <ListItem>

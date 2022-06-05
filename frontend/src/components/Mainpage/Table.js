@@ -12,6 +12,8 @@ import Rating from '@mui/material/Rating';
 
 import { gettableinfo } from '../../axios/Mainpage';
 
+import { NameContext } from '../../App';
+
 const rows_example = [
   {
   data: "",
@@ -37,11 +39,16 @@ const StickyHeadTable=() => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = React.useState(rows_example)
 
-  React.useEffect( async()=>{
+  const user = React.useContext(NameContext);
 
-    const data = await gettableinfo()
+  React.useEffect( async()=>{
+    if(!user){ 
+      return
+    }
+
+    const data = await gettableinfo(user)
     setRows(data)
-  },[])
+  },[user])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

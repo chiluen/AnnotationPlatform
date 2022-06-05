@@ -4,6 +4,8 @@ import 'chart.js/auto' //這一定要加
 import { getfinishpercentage } from '../../axios/Mainpage';
 import { state_sample } from '../../test_data';
 
+import { NameContext } from '../../App';
+
 const options = {
   plugins:{
     title: {
@@ -48,9 +50,13 @@ const state_template = {
 
 const Bargraph = () => {
   const [state, setstate] = React.useState(state_template)
+  const user = React.useContext(NameContext);
 
   React.useEffect(async ()=>{
-    const {finish, unfinish} = await getfinishpercentage()
+    if(!user){ 
+      return
+    }
+    const {finish, unfinish} = await getfinishpercentage(user)
     const state_template = {
       labels: ["Percentage"],
       datasets: [
@@ -71,7 +77,7 @@ const Bargraph = () => {
       ]
     }
     setstate(state_template)
-  },[])
+  },[user])
 
   return (
       <div style={{height:"300px"}}>

@@ -60,8 +60,7 @@ def returnFinishinfo():
     """
     連接DB, 拿到Fin
     """
-    # user = request.args['user'] #TODO: no such TOKEN
-    user = 'leo'
+    user = request.args['user'] #TODO: no such TOKEN
     upload_rows, annotate_rows, annotated_by_rows, review_rows, reviewed_by_rows, password = get_user_data_rows(user)
     
     d = {}
@@ -77,8 +76,8 @@ def returnDBstatistic():
     """
     連接DB, 拿到DB的統計資料
     """
-    # user = request.args['user']
-    user = 'leo'
+    user = request.args['user']
+    #user = 'leo'
     table = get_bigtable('annotation')
 
     text_regtext = f'^.+?#.+?#not_annotate#.+$'.encode()
@@ -107,7 +106,7 @@ def returnpieinfo():
     """
     連接DB, 拿到pie graph 所需資料
     """
-    # user = request.args['user']
+    user = request.args['user']
     user = 'leo'
     table = get_bigtable('annotation')
     result = []
@@ -132,7 +131,7 @@ def returntableinfo():
     連接DB, 拿到pie graph 所需資料
     """
     # copy function from DB.py
-    user = 'leo' # TODO: get from request
+    user = request.args['user']
     table = get_bigtable('annotation')
     rows = table.read_rows(filter_=RowKeyRegexFilter(f'^{user}#.+$'))
 

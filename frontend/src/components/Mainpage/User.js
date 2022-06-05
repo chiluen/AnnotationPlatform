@@ -16,6 +16,7 @@ const Usercard = (props)=>{
     const [numberOfReview, setNumberOfReview] = React.useState(0)
     const [reviewRank, setReviewRank] = React.useState(1)
 
+
     React.useEffect( async () => {
         if(!props.user){ //這個很重要，因為useEffect在props initialize以前就會啟動
             return

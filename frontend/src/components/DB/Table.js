@@ -20,6 +20,8 @@ import InputLabel from '@mui/material/InputLabel';
 
 import { gettableinfo, getselecttableinfo } from '../../axios/DB';
 
+import { NameContext } from '../../App';
+
 const columns = [
   { id: 'uploader', label: 'Uploader', minWidth:170},
   { id: 'data', label: 'Data', minWidth: 170 },
@@ -62,26 +64,61 @@ const StickyHeadTable=() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = React.useState(rows_example);
+  const [rows_template, setRowstemplate] = React.useState();
+
 
   const [scope, setScope] = React.useState("self");
   const [minstar, setMinstar] = React.useState(0);
   const [status, setStatus] = React.useState("all");
   const [category_, setCategory] = React.useState("")
 
+  const user = React.useContext(NameContext);
+
   React.useEffect( async()=>{
     const data = await gettableinfo()
     setRows(data)
+    setRowstemplate(data)
   },[])
 
   const handlequery = async()=>{
-    //   const data = {
-    //       scope: scope,
-    //       minstar: minstar,
-    //       status: status
-    //   }
-    //   console.log(data)
-    const data = await getselecttableinfo(scope, minstar, status, category_)
-    setRows(data)
+
+    //const data = await getselecttableinfo(scope, minstar, status, category_)
+    console.log(scope, minstar, status, category_)
+    //console.log(rows[0])
+    const temp_rows = rows_template
+
+
+    const query_data = {
+        uploader: scope,
+        rank: minstar,
+        status: status,
+        tag: category_
+    }
+    if(scope === 'self'){
+        query_data['uploader'] = user
+        if(status === 'ALL'){
+            const result = temp_rows.filter(row => (row.uploader == query_data['uploader']) && (row.rank >= query_data['rank']) && (row.tag == query_data['tag'])) 
+            setRows(result)
+        }
+        else{
+            console.log('check')
+            const result = temp_rows.filter(row => (row.uploader == query_data['uploader']) && (row.rank >= query_data['rank']) && (row.status == status) && (row.tag == query_data['tag'])) 
+            setRows(result)
+        }
+    }
+    else{
+        if(status === 'ALL'){
+            const result = temp_rows.filter(row => (row.rank >= query_data['rank']) && (row.tag == query_data['tag'])) 
+            setRows(result)
+        }
+        else{
+            const result = temp_rows.filter(row => (row.rank >= query_data['rank']) && (row.status == status) && (row.tag == query_data['tag'])) 
+            setRows(result)
+        }
+    }
+    
+
+
   }
 
 

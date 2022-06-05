@@ -9,23 +9,23 @@ const getuserprofile = async (name)=>{
     return {user, numberOfUpload, numberOfReview, reviewRank}
 }
 
-const getfinishpercentage = async ()=>{
-    const{data:{finish, unfinish}} = await instance.get('/mainpage/finishinfo');
+const getfinishpercentage = async (user)=>{
+    const{data:{finish, unfinish}} = await instance.get('/mainpage/finishinfo', {params:{user:user}});
     return {finish, unfinish}
 }
 
-const getdbstat = async ()=>{
-    const data = await instance.get('mainpage/dbstat')
+const getdbstat = async (user)=>{
+    const data = await instance.get('mainpage/dbstat', {params:{user:user}})
     return data.data
 }
 
-const getpieinfo = async ()=>{
-    const data = await instance.get('mainpage/pieinfo')
+const getpieinfo = async (user)=>{
+    const data = await instance.get('mainpage/pieinfo', {params:{user:user}})
     return data.data
 }
 
-const gettableinfo = async ()=>{
-    const data = await instance.get('mainpage/tableinfo')
+const gettableinfo = async (user)=>{
+    const data = await instance.get('mainpage/tableinfo', {params:{user:user}})
     return data.data
 }
 
