@@ -89,7 +89,7 @@ def returnDBstatistic():
 
     # TODO: get all sentenece from db
     sentences = [r.cells['text'][b'text'][0].value.decode() for r in text_rows]
-    avg_lens = round(sum([len(s) for s in sentences]) / len(sentences), 2) if len(sentences) > 0 else 0
+    avg_lens = round(sum([len(s.split()) for s in sentences]) / len(sentences), 2) if len(sentences) > 0 else 0
     pos_amount = sum([1 for i in positive_rows])
 
     dbstat_data = dict()
