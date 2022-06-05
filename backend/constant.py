@@ -2,7 +2,7 @@ PROJECT_ID = 'final-annotation-352116'
 BIGTABLE_INSTANCE_ID = 'final-annotation'
 TABLE_ID_AUTH = 'auth'
 TABLE_ID_ANNOTATION = 'annotation'
-TAGS = ["finance", "science", "other", "technology", "sports"]
+TAGS = ["Finance", "Science", "Other", "Technology", "Sports"]
 PROHIBIT_NAMES = ["already_annotate", "already_review", "not_annotate"] + TAGS
 
 def print_row(row):
