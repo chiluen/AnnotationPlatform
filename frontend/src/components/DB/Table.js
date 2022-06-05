@@ -64,6 +64,7 @@ const StickyHeadTable=() => {
   const [scope, setScope] = React.useState("self");
   const [minstar, setMinstar] = React.useState(0);
   const [status, setStatus] = React.useState("all");
+  const [category_, setCategory] = React.useState("")
 
   React.useEffect( async()=>{
     const data = await gettableinfo()
@@ -77,7 +78,7 @@ const StickyHeadTable=() => {
     //       status: status
     //   }
     //   console.log(data)
-    const data = await getselecttableinfo(scope, minstar, status)
+    const data = await getselecttableinfo(scope, minstar, status, category_)
     setRows(data)
   }
 
@@ -93,7 +94,7 @@ const StickyHeadTable=() => {
 
   return (
     <div>
-        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 1, md: 1 }} >
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 1, md: 1 }} >
             <Grid item xs={2} >
                 {constructSelect("檔案範圍", setScope, ["self", "all"])}
             </Grid>
@@ -103,11 +104,14 @@ const StickyHeadTable=() => {
             <Grid item xs={2} >
                 {constructSelect("標注結果", setStatus, ["Positive", "Neutral", "Negative", "Not Graded","ALL"])}
             </Grid>
+            <Grid item xs={2} >
+                {constructSelect("分類", setCategory, ["Finance","Sports","Technology","Science","Other"])}
+            </Grid>
             <Grid item xs={4} >
                 {/*"empty intentionally"*/}
             </Grid>
-            <Grid item xs={2} >
-                <Box display="flex" justifyContent="flex-end">
+            <Grid item xs={10} >
+                <Box display="flex" justifyContent="flex-end" style={{margin:"-60px 0px 0px 0em"}}>
                     <Button onClick={handlequery}  size="large" variant="contained" endIcon={<SendIcon />}>
                         Search
                     </Button>
