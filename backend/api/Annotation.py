@@ -86,7 +86,7 @@ def getannotation():
         selected = random.choice(sentences)
         key, sentence = selected[0], selected[1]
         output = {"data": sentence, "remain": len(sentences), "key": key}
-    except IndexError
+    except IndexError:
         output = {
             "data": "Well Done! That's enough for today!",
             "remain": 0,
