@@ -72,5 +72,4 @@ def returnselecttableinfo():
     """
 
 
-
     return json.dumps(tableinfo_data[:5])

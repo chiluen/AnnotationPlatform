@@ -19,8 +19,9 @@ def get_user_data_rows(user):
     annotate_regtext = f'^.+?#.+?#already_annotate#{user}#.+?#.+$'.encode()
     annotate_data_rows = table.read_rows(filter_=RowKeyRegexFilter(annotate_regtext))
 
-    annotated_by_regtext = f'{user}?#.+?#already_annotate#.+?#.+?#.+$'.encode()
-    annotated_by_data_rows = table.read_rows(filter_=RowKeyRegexFilter(annotate_regtext))
+    # yus#Technology#not_annotate#-5526783738657794297
+    annotated_by_regtext = f'^{user}#.+?#already_annotate#.+$'.encode()
+    annotated_by_data_rows = table.read_rows(filter_=RowKeyRegexFilter(annotated_by_regtext))   
 
     review_regtext = f'^.+?#.+?#already_review#.+?#.+?#{user}#.+?#.+$'.encode()
     review_data_rows = table.read_rows(filter_=RowKeyRegexFilter(review_regtext))
@@ -59,12 +60,13 @@ def returnFinishinfo():
     """
     連接DB, 拿到Fin
     """
-    user = request.args['user'] #TODO: no such TOKEN
-    upload_data_rows, annotate_data_rows, annotated_by_data_rows, review_data_rows, reviewed_by_data_rows, password = get_user_data_rows(user)
-
+    # user = request.args['user'] #TODO: no such TOKEN
+    user = 'leo'
+    upload_rows, annotate_rows, annotated_by_rows, review_rows, reviewed_by_rows, password = get_user_data_rows(user)
+    
     d = {}
-    d['finish'] = sum([1 for i in annotated_by_data_rows])
-    d['unfinish'] = sum([1 for i in upload_data_rows]) - d['finish']
+    d['finish'] = sum([1 for i in annotated_by_rows])
+    d['unfinish'] = sum([1 for i in upload_rows]) - d['finish']
     
     print(d)
     return d
@@ -75,32 +77,26 @@ def returnDBstatistic():
     """
     連接DB, 拿到DB的統計資料
     """
-    user = request.args['user']
+    # user = request.args['user']
+    user = 'leo'
     table = get_bigtable('annotation')
 
-    text_regtext = f'^.+?#^.+?#not_annotate#.+$'.encode()
-    text_filter = row_filters.RowFilterChain(
-        filters=[
-            RowKeyRegexFilter(text_regtext),
-            row_filters.CellsColumnLimitFilter(1),
-            row_filters.FamilyNameRegexFilter(b"text"),
-        ]
-    )
+    text_regtext = f'^.+?#.+?#not_annotate#.+$'.encode()
+    text_filter = RowKeyRegexFilter(text_regtext)
     text_rows = table.read_rows(filter_=text_filter)
 
     positive_regtext = f'^.+?#.+?#already_annotate#.+?#Positive#.*$'.encode()
     positive_rows = table.read_rows(filter_=RowKeyRegexFilter(positive_regtext))
 
-
     # TODO: get all sentenece from db
-    sentences = [r.cells[b'text'][0].values.decode().split() for r in text_rows]
-    avg_lens = sum([len(s) for s in sentences]) / len(sentences)
+    sentences = [r.cells['text'][b'text'][0].value.decode() for r in text_rows]
+    avg_lens = round(sum([len(s) for s in sentences]) / len(sentences), 2) if len(sentences) > 0 else 0
     pos_amount = sum([1 for i in positive_rows])
 
     dbstat_data = dict()
     dbstat_data['total_data'] = len(sentences) 
-    dbstat_data['positive_rate'] = pos_amount / len(sentences)
-    dbstat_data['avg_wors'] = avg_lens
+    dbstat_data['positive_rate'] = round(pos_amount / len(sentences), 4) if len(sentences) > 0 else 0
+    dbstat_data['avg_words'] = avg_lens
 
     return dbstat_data
 
@@ -111,7 +107,9 @@ def returnpieinfo():
     """
     連接DB, 拿到pie graph 所需資料
     """
-    user = request.args['user']
+    # user = request.args['user']
+    user = 'leo'
+    table = get_bigtable('annotation')
     result = []
     for i in range(6):
         positive_regtext = f'^{user}#.+?#already_review#.+?#.+?#.+?#{i}#.*$'.encode()
@@ -134,5 +132,41 @@ def returntableinfo():
     連接DB, 拿到pie graph 所需資料
     """
     # copy function from DB.py
+    user = 'leo' # TODO: get from request
+    table = get_bigtable('annotation')
+    rows = table.read_rows(filter_=RowKeyRegexFilter(f'^{user}#.+$'))
+
+    # TODO: implement O(N) is kinda waste of time
+    tableinfo_data, example = {}, {'status': 'Not Graded', 'rank': 0}
+    for r in rows:
+
+        row_name = r.row_key.decode()
+        row_name_elements = row_name.split('#')
+        uploader = row_name_elements[0]
+        tag = row_name_elements[1]
+        status = row_name_elements[2]
+        sentence_hash = row_name_elements[-1]
+
+        row_dict_key = '#'.join([uploader, tag, sentence_hash])
+        row_dict = tableinfo_data.get(row_dict_key, example.copy())
+        row_dict['tag'] = tag
+        row_dict['uploader'] = uploader
+
+        if status == 'not_annotate':
+            sentence =  r.cells['text'][b'text'][0].value.decode()
+            row_dict['data'] = sentence
+        elif status == 'already_annotate':
+            row_dict['status'] = r.cells['annotation'][b'label'][0].value.decode()
+        elif status == 'already_review':
+            rank = r.cells['review'][b'score'][0].value.decode()
+            try:
+                score = int(rank)
+            except ValueError:
+                score = 0
+            row_dict['rank'] = score
+
+        tableinfo_data[row_dict_key] = row_dict
+
+    tableinfo_data = [i for i in tableinfo_data.values()]
 
     return json.dumps(tableinfo_data)
