@@ -84,7 +84,6 @@ const StickyHeadTable=() => {
 
     //const data = await getselecttableinfo(scope, minstar, status, category_)
     console.log(scope, minstar, status, category_)
-    //console.log(rows[0])
     const temp_rows = rows_template
 
 
