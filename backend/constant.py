@@ -1,3 +1,5 @@
+from datetime import datetime
+
 PROJECT_ID = 'final-annotation-352116'
 BIGTABLE_INSTANCE_ID = 'final-annotation'
 TABLE_ID_AUTH = 'auth'
@@ -33,3 +35,5 @@ def update_metadata(user, update_target, amount)
         new_num = previous_num + amount
     except KeyError:
         new_num = amount
+    row_write.set_cell('information', update_target, str(new_num), datetime.utcnow())
+    row_write.commit()
