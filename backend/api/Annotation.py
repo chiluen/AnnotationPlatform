@@ -29,8 +29,8 @@ def updatedbforannotation():
     # capture request
     # annotator = request.args['user']
     request_data = json.loads(request.data.decode())
-    annotator = "yus" # request.args['user']
-    row_key = b'leo#finance#not_annotate#-3347841054046219985'.decode()
+    annotator = "leo" # request.args['user']
+    row_key = b'yus#finance#not_annotate#-1407824835996527616'.decode()
     # TODO: pass by requests
     label = request_data['decision']
     timestamp = datetime.datetime.utcnow()
@@ -54,7 +54,7 @@ def getannotation():
     """
     連接DB, 得到新的一筆data
     """
-    annotator = 'yus' # random.choice(['yus', 'leo'])
+    annotator = 'leo' # random.choice(['yus', 'leo'])
     # annotator = request.args['user']
     table = get_bigtable('annotation')
 

@@ -97,6 +97,7 @@ def returnDBstatistic():
 
     # TODO: get all sentenece from db
     sentences = [r.cells[b'text'][0].values.decode().split() for r in text_rows]
+    print(sentences)
     avg_lens = sum([len(s) for s in sentences]) / len(sentences) if len(sentences) > 0 else 0
     pos_amount = sum([1 for i in positive_rows])
 
@@ -116,6 +117,7 @@ def returnpieinfo():
     """
     # user = request.args['user']
     user = 'yus'
+    table = get_bigtable('annotation')
     result = []
     for i in range(6):
         positive_regtext = f'^{user}#.+?#already_review#.+?#.+?#.+?#{i}#.*$'.encode()
@@ -127,7 +129,7 @@ def returnpieinfo():
     pieinfo_data = dict()
     for k, v in zip(keys, result):
         pieinfo_data[k] = v
-
+    print(pieinfo_data)
     return pieinfo_data
 
 
@@ -138,5 +140,36 @@ def returntableinfo():
     連接DB, 拿到pie graph 所需資料
     """
     # copy function from DB.py
+    user = 'yus'
+    table = get_bigtable('annotation')
+    rows = table.read_rows(filter_=RowKeyRegexFilter('^{user}#.*$'))
 
+    # TODO: implement O(N) is kinda waste of time
+    tableinfo_data, example = {}, {'status': 'Not Graded', 'rank': 0}
+    for r in rows:
+        row_name = r.row_key.decode()
+        row_name_elements = row_name.split('#')
+        uploader = row_name_elements[0]
+        tag = row_name_elements[1]
+        status = row_name_elements[2]
+        sentence_hash = row_name_elements[-1]
+
+        row_dict_key = '#'.join([uploader, tag, sentence_hash])
+        row_dict = tableinfo_data.get(row_dict_key, example.copy())
+        if status == 'not_annotate':
+            sentence =  r.cells['text'][b'text'][0].value.decode()
+            row_dict['data'] = sentence
+        elif status == 'already_annotate':
+            row_dict['status'] = r.cells['annotation'][b'label'][0].value.decode()
+        elif status == 'already_review':
+            rank = r.cells['review'][b'score'][0].value.decode()
+            try:
+                score = int(rank)
+            except ValueError:
+                score = 0
+                row_dict['rank'] = score
+        tableinfo_data[row_dict_key] = row_dict
+
+    tableinfo_data = [i for i in tableinfo_data.values()]
+    print(tableinfo_data)
     return json.dumps(tableinfo_data)
