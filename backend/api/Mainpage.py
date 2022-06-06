@@ -50,12 +50,17 @@ def returnUserprofile():
     d["password"] = password
     
     auth_table = get_bigtable('auth')
-    upload_amount = auth_table.read_row(user).cells["information"][b"upload_amount"][0].value.decode() 
-    d["numberOfUpload"] = upload_amount
+    try:
+        upload_amount = auth_table.read_row(user).cells["information"][b"upload_amount"][0].value 
+        d["numberOfUpload"] = int.from_bytes(upload_amount, 'big')
+    except KeyError:
+        d["numberOfUpload"] = 0
     
-    auth_table = get_bigtable('auth')
-    reviewed_by_amount = auth_table.read_row(user).cells["information"][b"already_reviewed_by"][0].value.decode() 
-    d["numberOfReview"] = reviewed_by_amount
+    try:
+        reviewed_by_amount = auth_table.read_row(user).cells["information"][b"already_reviewed_by"][0].value.decode() 
+        d["numberOfReview"] = reviewed_by_amount
+    except KeyError:
+        d["numberOfReview"] = 0
    
     reviewed_by_regtext = f'^.+?#.+?#already_review#{user}#.+?#.+?#.+?#.+$'.encode()
     reviewed_by_data_rows = auth_table.read_rows(filter_=RowKeyRegexFilter(reviewed_by_regtext))
@@ -88,13 +93,21 @@ def returnDBstatistic():
     """
     user = request.args['user']
     table = get_bigtable('annotation')
+    auth_table = get_bigtable('auth')
 
+    row_overall = auth_table.read_row('overall')
+    total_amount = row_overall.cells['information'][b'total_sentences'][0].value
+    total_amount = int.from_bytes(total_amount, 'big')
+    pos_amount = row_overall.cells['information'][b'
+
+    '''
     text_regtext = f'^.+?#.+?#not_annotate#.+$'.encode()
     text_filter = RowKeyRegexFilter(text_regtext)
     text_rows = table.read_rows(filter_=text_filter)
-
+    
     positive_regtext = f'^.+?#.+?#already_annotate#.+?#Positive#.*$'.encode()
     positive_rows = table.read_rows(filter_=RowKeyRegexFilter(positive_regtext))
+    '''
 
     # TODO: get all sentenece from db
     sentences = [r.cells['text'][b'text'][0].value.decode() for r in text_rows]

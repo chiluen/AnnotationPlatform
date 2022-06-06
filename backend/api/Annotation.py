@@ -43,6 +43,7 @@ def updatedbforannotation():
     row.commit()
     # ------------------------------- new code ------------------ #
     update_metadata(uploader, 'already_annotated_by', 1)
+    update_metadata('overall', f'num_of_{label}', 1)
     # ---------------------- new code ned ----------------------- #
 
 

@@ -20,7 +20,7 @@ def update_metadata(user, update_target, amount):
     
     auth_table = get_bigtable('auth')
     row = auth_table.append_row(user)
-    row.increment_cell_value('inforamtion', update_target, amount)
+    row.increment_cell_value('information', update_target, amount)
     row.commit()
     '''
     row_read = auth_table.read_row(user)

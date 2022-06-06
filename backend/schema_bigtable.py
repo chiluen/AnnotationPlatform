@@ -44,7 +44,10 @@ def initialize_bigtable(project_id, instance_id):
         print(f"table auth already exists")
     
     row_overall = table_auth.direct_row('overall')
-    row_overall.set_cell('information', 'token_amount', 0, datetime.datetime.utcnow())
+    row_overall.set_cell('information', 'num_of_tokens', 0, datetime.datetime.utcnow())
+    row_overall.set_cell('information', 'total_sentences', 0, datetime.datetime.utcnow())
+    row_overall.set_cell('information', 'num_of_Positive', 0, datetime.datetime.utcnow())
+    row_overall.commit()
 
 if __name__ == '__main__':
     initialize_bigtable(PROJECT_ID, BIGTABLE_INSTANCE_ID)

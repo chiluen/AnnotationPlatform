@@ -68,5 +68,6 @@ def updatedbforreview():
      
     # update information of auth table
     update_metadata(uploader, 'upload_amount', upload_volume) 
+    update_metadata('overall', 'total_sentences', upload_volume)
     # -------------------------------- new code block ends ---------------------- #
     return "Nothing"
