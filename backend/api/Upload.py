@@ -29,7 +29,7 @@ def upload_a_sentence(input_tuple):
         row = table_anno.direct_row(row_key)
         row.set_cell('text', 'text', sentence, timestamp)
         row.set_cell('annotation', 'already_annotated', str(0), timestamp)
-        # row.set_cell('review', 'already_reviewed', str(0), timestamp)
+        row.set_cell('review', 'already_reviewed', str(0), timestamp)
 
         row.commit()
         return 1
