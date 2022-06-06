@@ -3,7 +3,7 @@ BIGTABLE_INSTANCE_ID = 'final-annotation'
 TABLE_ID_AUTH = 'auth'
 TABLE_ID_ANNOTATION = 'annotation'
 TAGS = ["Finance", "Science", "Other", "Technology", "Sports"]
-PROHIBIT_NAMES = ["already_annotate", "already_review", "not_annotate"] + TAGS
+PROHIBIT_NAMES = ["overall", "already_annotate", "already_review", "not_annotate"] + TAGS
 
 def print_row(row):
     print("Reading data for {}:".format(row.row_key.decode("utf-8")))

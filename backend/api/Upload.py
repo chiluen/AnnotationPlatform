@@ -6,7 +6,7 @@ from datetime import datetime
 
 from flask import Blueprint, request, session, g
 
-from api.bigtable import get_bigtable
+from api.bigtable import get_bigtable, update_metadata
 from google.cloud.bigtable import row_filters
 
 from constant import *
@@ -61,22 +61,12 @@ def updatedbforreview():
     pool = mp.Pool(num_cpu)
     upload_volume = pool.map(upload_a_sentence, sentences)
     upload_volume = sum(upload_volume)
-    
-    
+
+    # calculate average token by averaging over all tokens
+    total_tokens = sum([len(s[2].split()) for s in sentences])
+    update_metadata('overall', 'num_of_tokens', total_tokens)
+     
     # update information of auth table
-    metadata_table = get_bigtable('auth')
-    row_read = metadata_table.read_row(uploader)
-    row_write = metadata_table.direct_row(uploader)
-    # print_row(row_read)
-    # print(row_read.cells['information'])
-    try:
-        previous_num = int(row_read.cells['information'][b'upload_amount'][0].value.decode())
-        new_num = previous_num + upload_volume
-    except KeyError:
-        new_num = upload_volume
-    
-    row_write.set_cell('information', 'upload_amount', str(new_num), timestamp)
-    row_write.commit()
-    
+    update_metadata(uploader, 'upload_amount', upload_volume) 
     # -------------------------------- new code block ends ---------------------- #
     return "Nothing"

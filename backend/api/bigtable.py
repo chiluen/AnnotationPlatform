@@ -17,7 +17,12 @@ def get_bigtable(
     return table
 
 def update_metadata(user, update_target, amount):
+    
     auth_table = get_bigtable('auth')
+    row = auth_table.append_row(user)
+    row.increment_cell_value('inforamtion', update_target, amount)
+    row.commit()
+    '''
     row_read = auth_table.read_row(user)
     row_write = auth_table.direct_row(user)
     try:
@@ -27,3 +32,4 @@ def update_metadata(user, update_target, amount):
         new_num = amount
     row_write.set_cell('information', update_target, str(new_num), datetime.utcnow())
     row_write.commit()
+    '''

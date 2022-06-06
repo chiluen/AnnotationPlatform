@@ -42,6 +42,9 @@ def initialize_bigtable(project_id, instance_id):
         table_auth.create(column_families=column_families_auth)
     else:
         print(f"table auth already exists")
+    
+    row_overall = table_auth.direct_row('overall')
+    row_overall.set_cell('information', 'token_amount', 0, datetime.datetime.utcnow())
 
 if __name__ == '__main__':
     initialize_bigtable(PROJECT_ID, BIGTABLE_INSTANCE_ID)
