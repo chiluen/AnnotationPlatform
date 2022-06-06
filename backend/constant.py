@@ -1,4 +1,5 @@
 from datetime import datetime
+from api.bigtable import get_bigtable
 
 PROJECT_ID = 'final-annotation-352116'
 BIGTABLE_INSTANCE_ID = 'final-annotation'
@@ -26,14 +27,4 @@ def print_row(row):
                 )
     print("")
 
-def update_metadata(user, update_target, amount):
-    auth_table = get_bigtable('auth')
-    row_read = auth_table.read_row(user)
-    row_write = auth_table.direct_row(user)
-    try:
-        previous_num = int(row_read.cells['information'][update_target.encode()][0].value.decode())
-        new_num = previous_num + amount
-    except KeyError:
-        new_num = amount
-    row_write.set_cell('information', update_target, str(new_num), datetime.utcnow())
-    row_write.commit()
+

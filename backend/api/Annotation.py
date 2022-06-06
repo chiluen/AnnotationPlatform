@@ -1,6 +1,6 @@
 import json
 import random
-import datetime
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify
 #from test_data import annotation_example
@@ -9,7 +9,7 @@ from google.cloud.bigtable import row_filters
 from google.cloud.bigtable import column_family
 
 from constant import *
-from api.bigtable import get_bigtable
+from api.bigtable import get_bigtable, update_metadata
 
 #-----API Construction-----#
 annotationApi = Blueprint('annotationApi', __name__)
@@ -32,16 +32,19 @@ def updatedbforannotation():
 
     # TODO: pass by requests
     label = request_data['decision']
-    timestamp = datetime.datetime.utcnow()
+    timestamp = datetime.utcnow()
     
     uploader, tag, status, sentence_hash = row_key.split("#")
-
     # prepare input
     row_key_write = f'{uploader}#{tag}#already_annotate#{annotator}#{label}#{sentence_hash}'
     row = table.row(row_key_write)
     row.set_cell(column_family_id, 'label', label, timestamp)
     row.set_cell(column_family_id, "already_annotated", str(1), timestamp)
     row.commit()
+    # ------------------------------- new code ------------------ #
+    update_metadata(uploader, 'already_annotated_by', 1)
+    # ---------------------- new code ned ----------------------- #
+
 
     return "Nothing"
 

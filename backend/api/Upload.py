@@ -63,7 +63,7 @@ def updatedbforreview():
     upload_volume = sum(upload_volume)
 
     # update information of auth table
-    metadata_table = get_bigtable('metadata')
+    metadata_table = get_bigtable('auth')
     row_read = metadata_table.read_row(uploader)
     row_write = metadata_table.direct_row(uploader)
     # print_row(row_read)
