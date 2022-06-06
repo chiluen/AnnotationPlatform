@@ -54,6 +54,8 @@ def getannotation():
     連接DB, 得到新的一筆data
     """
     #annotator = 'yus' # random.choice(['yus', 'leo'])
+    # each time user get in gets a bunch of sentences, which is slow
+
     annotator = request.args['user']
     table = get_bigtable('annotation')
 
