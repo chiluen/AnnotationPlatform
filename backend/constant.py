@@ -24,5 +24,12 @@ def print_row(row):
                 )
     print("")
 
-def it_count(iterator):
-    return sum(i for i in iterator)
+def update_metadata(user, update_target, amount)
+    auth_table = get_bigtable('auth')
+    row_read = auth_table.read_row(user)
+    row_write = auth_table.direct_row(user)
+    try:
+        previous_num = int(row_read.cells['information'][update_target.encode()][0].value.decode())
+        new_num = previous_num + amount
+    except KeyError:
+        new_num = amount
