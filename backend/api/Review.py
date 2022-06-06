@@ -1,14 +1,14 @@
 import random
 from flask import Blueprint, request
 import json
-import datetime
+from datetime import datetime
 
 # from test_data import review_example
 from google.cloud import bigtable
 from google.cloud.bigtable import row_filters
 from google.cloud.bigtable import column_family
 
-from api.bigtable import get_bigtable
+from api.bigtable import get_bigtable, update_metadata
 
 #-----API Construction-----#
 reviewApi = Blueprint('reviewApi', __name__)
@@ -32,11 +32,13 @@ def updatedbforreview():
 
     uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
-    timestamp = datetime.datetime.utcnow()
+    timestamp = datetime.utcnow()
     row = table.row(row_key_write)
     row.set_cell('review', 'score', str(score), timestamp)
     row.set_cell('review', 'already_review', str(1), timestamp)
     row.commit()
+
+    update_metadata(uploader, 'already_reviewed_by', 1)
     print("Successfully wrote row {}.".format(row_key_write))
     return "Nothing"
 

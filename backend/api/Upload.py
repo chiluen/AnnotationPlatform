@@ -61,7 +61,8 @@ def updatedbforreview():
     pool = mp.Pool(num_cpu)
     upload_volume = pool.map(upload_a_sentence, sentences)
     upload_volume = sum(upload_volume)
-
+    
+    
     # update information of auth table
     metadata_table = get_bigtable('auth')
     row_read = metadata_table.read_row(uploader)

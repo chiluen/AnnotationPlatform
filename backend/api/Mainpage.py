@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session
 import json
-from api.bigtable import get_bigtable
+from api.bigtable import get_bigtable, update_metadata
 from google.cloud.bigtable import row_filters
 from google.cloud.bigtable.row_filters import RowKeyRegexFilter
 
@@ -42,13 +42,23 @@ def returnUserprofile():
     連接DB, 拿到user information
     """
     user = request.args['user']
-    upload_data_rows, annotate_data_rows, annotated_by_data_rows, review_data_rows, reviewed_by_data_rows, password = get_user_data_rows(user)
 
     d = {}
     d["user"] = user
+    auth_table = get_bigtable('auth')
+    password = auth_table.read_row(user).cells["information"][b"password"][0].value.decode() 
     d["password"] = password
-    d["numberOfUpload"] = sum([1 for i in upload_data_rows])
-    d["numberOfReview"] = sum([1 for i in review_data_rows])
+    
+    auth_table = get_bigtable('auth')
+    upload_amount = auth_table.read_row(user).cells["information"][b"upload_amount"][0].value.decode() 
+    d["numberOfUpload"] = upload_amount
+    
+    auth_table = get_bigtable('auth')
+    reviewed_by_amount = auth_table.read_row(user).cells["information"][b"already_reviewed_by"][0].value.decode() 
+    d["numberOfReview"] = reviewed_by_amount
+   
+    reviewed_by_regtext = f'^.+?#.+?#already_review#{user}#.+?#.+?#.+?#.+$'.encode()
+    reviewed_by_data_rows = auth_table.read_rows(filter_=RowKeyRegexFilter(reviewed_by_regtext))
     d["reviewRank"] = sum([1 for i in reviewed_by_data_rows])
 
     print(d)
@@ -77,7 +87,6 @@ def returnDBstatistic():
     連接DB, 拿到DB的統計資料
     """
     user = request.args['user']
-    #user = 'leo'
     table = get_bigtable('annotation')
 
     text_regtext = f'^.+?#.+?#not_annotate#.+$'.encode()
@@ -107,7 +116,6 @@ def returnpieinfo():
     連接DB, 拿到pie graph 所需資料
     """
     user = request.args['user']
-    user = 'leo'
     table = get_bigtable('annotation')
     result = []
     for i in range(6):
@@ -120,7 +128,8 @@ def returnpieinfo():
     pieinfo_data = dict()
     for k, v in zip(keys, result):
         pieinfo_data[k] = v
-
+    
+    print(pieinfo_data)
     return pieinfo_data
 
 
