@@ -57,7 +57,7 @@ def returnUserprofile():
         d["numberOfUpload"] = 0
     
     try:
-        reviewed_by_amount = auth_table.read_row(user).cells["information"][b"already_review"][0].value
+        reviewed_by_amount = auth_table.read_row(user).cells["information"][b"already_reviewed_by"][0].value
         reviewed_by_amount = int.from_bytes(reviewed_by_amount, 'big')
         d["numberOfReview"] = reviewed_by_amount
     except KeyError:

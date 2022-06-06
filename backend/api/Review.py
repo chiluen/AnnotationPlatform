@@ -29,11 +29,15 @@ def updatedbforreview():
     
     score = request_data['decision']
     row_key = request_data['key']
-    row_old = table.row(row_key)
+    if row_key is None:
+        return "Nothing"
+    uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
+    
+    row_key_text = f'{uploader}#{tag}#not_annotate#{hash_sent}'
+    row_old = table.row(row_key_text)
     row_old.set_cell("review", "already_reviewed", str(1), timestamp)
     row_old.commit()
 
-    uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
     timestamp = datetime.utcnow()
     row = table.row(row_key_write)
@@ -42,6 +46,8 @@ def updatedbforreview():
     row.commit()
 
     update_metadata(uploader, 'already_reviewed_by', 1)
+    update_metadata('overall', 'num_of_reviewed', 1)
+
     print("Successfully wrote row {}.".format(row_key_write))
     return "Nothing"
 
@@ -62,39 +68,41 @@ def getreview():
     # reviwer should not be annotator or uploader
     reviewer = request.args['user']
     table = get_bigtable('annotation')
-   
-    # get those annotated
-    # the re2 regex did not support negate lookaround, I'm not sure what is here
-    # but small data testing looks fine (won't retrieve uploader and annotator's data)
-    regex_text_candidate = f'^(?:$|[^{reviewer}]).+?#.+?#already_annotate#(?:$|[^{reviewer}]).+?#.*$'
-    condition_candidate = row_filters.RowKeyRegexFilter(regex_text_candidate.encode())
-    rows_data = table.read_rows(filter_=condition_candidate)
-    
-    chain_filter = row_filters.RowFilterChain(
+    condition_review = row_filters.RowFilterChain(
         filters=[
-            condition_candidate,
+            row_filters.RowKeyRegexFilter(f'^(?:$|[^{reviewer}]).*$'.encode()),
+            row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
+            row_filters.ColumnQualifierRegexFilter(f'already_reviewed'.encode()),
+            row_filters.ValueRegexFilter('0'.encode()),
+            row_filters.RowSampleFilter(0.5),
         ]
     )
-    # get those have been reviewed
-    regex_text_not_candidate = f'^(?:$|[^{reviewer}]).+?#.+?#already_review#(?:|[^{reviewer}]).+?#.*$'
-    condition_not_candidate = row_filters.RowKeyRegexFilter(regex_text_not_candidate.encode())
-    rows_data_not_candidate = table.read_rows(filter_=condition_not_candidate)
-    not_candidates = set([r.row_key.decode().split('#')[-1] for r in rows_data_not_candidate])
+    
+    candidates = table.read_rows(filter_=condition_review)
+    candidate_row_keys = [r.row_key.decode() for r in candidates]
+    print('look here')
+    print(candidate_row_keys)
+    sentences = [table.read_row(k).cells["text"][b"text"][0].value.decode() for k in candidate_row_keys]
+    pairs = [(k, v) for k, v in zip(candidate_row_keys, sentences)]
+    
+    auth_table = get_bigtable('auth')
+    row_meta = auth_table.read_row('overall')
+    row_anno = auth_table.read_row(reviewer)
 
-    sentences = [r.row_key.decode() for r in rows_data]
-    sentences = [s for s in sentences if s.split('#')[-1] not in not_candidates]
+    total_annotate = int.from_bytes(row_meta.cells['information'][b'num_of_annotated'][0].value, 'big')
+    total_review = int.from_bytes(row_meta.cells['information'][b'num_of_reviewed'][0].value, 'big')
+    num_of_annotator_annotated = int.from_bytes(row_anno.cells['information'][b'already_annotated_by'][0].value, 'big')
+    num_of_annotator_annotated_reviewed = int.from_bytes(row_anno.cells['information'][b'already_reviewed_by'][0].value, 'big')
 
-    texts = [table.read_row(get_text_row_key(s)).cells["text"][b"text"][0].value.decode() for s in sentences]
+    remain = total_annotate - total_review - num_of_annotator_annotated - num_of_annotator_annotated_reviewed
     
     try:
-        pairs = [(i, s) for i, s in zip(sentences, texts)]
 
         selected = random.choice(pairs)
         row_key, sentence = selected[0], selected[1]
         number_of_remain = len(pairs)
         label = table.read_row(row_key).cells['annotation'][b'label'][0].value.decode()
     
-
         output = {
             "remain": number_of_remain , 
             "data": sentence, 
@@ -108,5 +116,4 @@ def getreview():
             "classification": "Positive",
             "key": None
         }
-    
     return output
