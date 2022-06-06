@@ -29,6 +29,8 @@ def updatedbforannotation():
     request_data = json.loads(request.data.decode())
     annotator = request.args['user']
     row_key = request_data['key']
+    if row_key is None:
+        return 'Nothing'
     row_old = table.row(row_key)
     row_old.set_cell("annotation", "already_annotated", str(1), timestamp)
     row_old.commit()
@@ -46,6 +48,7 @@ def updatedbforannotation():
     # ------------------------------- new code ------------------ #
     update_metadata(uploader, 'already_annotated_by', 1)
     update_metadata('overall', f'num_of_{label}', 1)
+    update_metadata('overall', 'num_of_annotated', 1)
     # ---------------------- new code ned ----------------------- #
 
 
@@ -68,35 +71,25 @@ def getannotation():
     # dont get annotator's query
     # TODO: it is not efficient to query all ~user data at each time
     # bigtable has random row filter, using that will be faster 
-    '''
-    condition_not_annotate = row_filters.RowFilterChain(
-        filters=[
-            row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
-            row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
-            row_filters.RandomRow
-            row_filters.ValueRegexFilter(f'')
-        ]
-    )
-    '''
-
-    rows_data = table.read_rows(filter_=condition_not_annotate)
-    
     condition_annotate = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
-            row_filters.RowKeyRegexFilter(f'^.+#already_annotate#.+$'.encode()),
+            row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
+            row_filters.ColumnQualifierRegexFilter(f'already_annotated'.encode()),
+            row_filters.ValueRegexFilter('0'.encode()),
+            row_filters.RowSampleFilter(0.5),
         ]
     )
+    
+    candidates = table.read_rows(filter_=condition_annotate)
+    candidate_row_keys = [r.row_key.decode() for r in candidates]
+    print('look here')
+    print(candidate_row_keys)
+    sentences = [table.read_row(k).cells["text"][b"text"][0].value.decode() for k in candidate_row_keys]
+    pairs = [(k, v) for k, v in zip(candidate_row_keys, sentences)]
 
-    rows_data_not_selected = table.read_rows(filter_=condition_annotate)
-    # TODO: will O(N) influence
-    # query in multiple time is slow
-
-    sentences = [(r.row_key.decode(), r.cells["text"]["text".encode()][0].value.decode()) for r in rows_data]
-    sentences_not_select = set([r.row_key.decode().split('#')[-1] for r in rows_data_not_selected])
-    sentences = [s for s in sentences if s[0].split('#')[-1] not in sentences_not_select]
     try:
-        selected = random.choice(sentences)
+        selected = random.choice(pairs)
         key, sentence = selected[0], selected[1]
         output = {"data": sentence, "remain": len(sentences), "key": key}
     except IndexError:
