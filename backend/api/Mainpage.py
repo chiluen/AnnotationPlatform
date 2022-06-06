@@ -102,8 +102,8 @@ def returnDBstatistic():
     pos_amount = row_overall.cells['information'][b'num_of_Positive'][0].value
     pos_amount = int.from_bytes(pos_amount, 'big')
     total_token = int.from_bytes(row_overall.cells['information'][b'num_of_tokens'][0].value, 'big')
-    avg_lens = total_token / total_amount if total_amount > 0 else 0
-    positive_ratio = pos_amount / total_amount if total_amount > 0 else 0
+    avg_lens = round(total_token / total_amount, 2) if total_amount > 0 else 0
+    positive_ratio = round(pos_amount / total_amount, 4) if total_amount > 0 else 0
 
 
     dbstat_data = dict()
