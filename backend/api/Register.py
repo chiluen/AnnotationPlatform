@@ -33,5 +33,9 @@ def register():
         row_key = data["user"]
         row = table.direct_row(row_key)
         row.set_cell('information', 'password', data['password'], timestamp)
+        row.set_cell('information', 'upload_amount', 0, timestamp)
+        row.set_cell('information', 'already_annotated_by', 0, timestamp)
+        row.set_cell('information', 'already_reviewed_by', 0, timestamp)
+        row.set_cell('information', 'already_review', 0, timestamp)
         row.commit()
         return {"result": "Ok"}

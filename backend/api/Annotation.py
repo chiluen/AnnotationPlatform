@@ -87,11 +87,22 @@ def getannotation():
     print(candidate_row_keys)
     sentences = [table.read_row(k).cells["text"][b"text"][0].value.decode() for k in candidate_row_keys]
     pairs = [(k, v) for k, v in zip(candidate_row_keys, sentences)]
+    
+    auth_table = get_bigtable('auth')
+    row_meta = auth_table.read_row('overall')
+    row_anno = auth_table.read_row(annotator)
 
+    total_sentence = int.from_bytes(row_meta.cells['information'][b'total_sentences'][0].value, 'big')
+    total_annotate = int.from_bytes(row_meta.cells['information'][b'num_of_annotated'][0].value, 'big')
+    num_of_annotator_upload = int.from_bytes(row_anno.cells['information'][b'upload_amount'][0].value, 'big')
+    num_of_annotator_upload_annotate = int.from_bytes(row_anno.cells['information'][b'already_annotated_by'][0].value, 'big')
+
+    remain = total_sentence - total_annotate - num_of_annotator_upload + num_of_annotator_upload_annotate 
+    
     try:
         selected = random.choice(pairs)
         key, sentence = selected[0], selected[1]
-        output = {"data": sentence, "remain": len(sentences), "key": key}
+        output = {"data": sentence, "remain": remain, "key": key}
     except IndexError:
         output = {
             "data": "Well Done! That's enough for today!",

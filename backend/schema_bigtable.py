@@ -48,6 +48,7 @@ def initialize_bigtable(project_id, instance_id):
     row_overall.set_cell('information', 'total_sentences', 0, datetime.datetime.utcnow())
     row_overall.set_cell('information', 'num_of_Positive', 0, datetime.datetime.utcnow())
     row_overall.set_cell('information', 'num_of_annotated', 0, datetime.datetime.utcnow())
+    row_overall.set_cell('information', 'num_of_reviewed', 0, datetime.datetime.utcnow())
     row_overall.commit()
 
 if __name__ == '__main__':
