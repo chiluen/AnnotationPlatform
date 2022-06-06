@@ -98,25 +98,16 @@ def returnDBstatistic():
     row_overall = auth_table.read_row('overall')
     total_amount = row_overall.cells['information'][b'total_sentences'][0].value
     total_amount = int.from_bytes(total_amount, 'big')
-    pos_amount = row_overall.cells['information'][b'
+    pos_amount = row_overall.cells['information'][b'num_of_Positive'][0].value
+    pos_amount = int.from_bytes(pos_amount, 'big')
+    total_token = int.from_bytes(row_overall.cells['information'][b'num_of_tokens'][0].value, 'big')
+    avg_lens = total_token / total_amount if total_amount > 0 else 0
+    positive_ratio = pos_amount / total_amount if total_amount > 0 else 0
 
-    '''
-    text_regtext = f'^.+?#.+?#not_annotate#.+$'.encode()
-    text_filter = RowKeyRegexFilter(text_regtext)
-    text_rows = table.read_rows(filter_=text_filter)
-    
-    positive_regtext = f'^.+?#.+?#already_annotate#.+?#Positive#.*$'.encode()
-    positive_rows = table.read_rows(filter_=RowKeyRegexFilter(positive_regtext))
-    '''
-
-    # TODO: get all sentenece from db
-    sentences = [r.cells['text'][b'text'][0].value.decode() for r in text_rows]
-    avg_lens = round(sum([len(s.split()) for s in sentences]) / len(sentences), 2) if len(sentences) > 0 else 0
-    pos_amount = sum([1 for i in positive_rows])
 
     dbstat_data = dict()
-    dbstat_data['total_data'] = len(sentences) 
-    dbstat_data['positive_rate'] = round(pos_amount / len(sentences), 4) if len(sentences) > 0 else 0
+    dbstat_data['total_data'] = total_amount
+    dbstat_data['positive_rate'] = positive_ratio
     dbstat_data['avg_words'] = avg_lens
 
     return dbstat_data
