@@ -26,7 +26,7 @@ def print_row(row):
                 )
     print("")
 
-def update_metadata(user, update_target, amount)
+def update_metadata(user, update_target, amount):
     auth_table = get_bigtable('auth')
     row_read = auth_table.read_row(user)
     row_write = auth_table.direct_row(user)
