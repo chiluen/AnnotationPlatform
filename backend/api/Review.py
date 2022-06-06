@@ -34,13 +34,13 @@ def updatedbforreview():
     uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
     
     row_key_text = f'{uploader}#{tag}#not_annotate#{hash_sent}'
-    row_old = table.row(row_key_text)
+    row_old = table.direct_row(row_key_text)
     row_old.set_cell("review", "already_reviewed", str(1), timestamp)
     row_old.commit()
 
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
     timestamp = datetime.utcnow()
-    row = table.row(row_key_write)
+    row = table.direct_row(row_key_write)
     row.set_cell('review', 'score', str(score), timestamp)
     # row.set_cell('review', 'already_reviewed', str(1), timestamp)
     row.commit()
@@ -73,8 +73,9 @@ def getreview():
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{reviewer}]).*$'.encode()),
             row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
             row_filters.ColumnQualifierRegexFilter(f'already_reviewed'.encode()),
+            row_filters.CellsColumnLimitFilter(1),
             row_filters.ValueRegexFilter('0'.encode()),
-            row_filters.RowSampleFilter(0.5),
+            row_filters.RowSampleFilter(0.99),
         ]
     )
     
