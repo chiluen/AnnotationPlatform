@@ -35,14 +35,18 @@ def updatedbforreview():
     
     upload_volume = 0
     for i, sentence in enumerate(data):
-        sentence = sentence.decode()
-        row_key = f'{uploader}#{tag}#not_annotate#{hash(sentence)}'
-        row = table.direct_row(row_key)
-        row.set_cell('text', 'text', sentence, timestamp)
-        row.set_cell('annotation', 'already_annotated', str(0), timestamp)
+        sentence = sentence.decode('utf-8')
+        try:
+            row_key = f'{uploader}#{tag}#not_annotate#{hash(sentence)}'
+            row = table.direct_row(row_key)
+            row.set_cell('text', 'text', sentence, timestamp)
+            row.set_cell('annotation', 'already_annotated', str(0), timestamp)
 
-        row.commit()
-        upload_volume += 1
+            row.commit()
+            upload_volume += 1
+        except UnicodeEncodeError:
+            print('UNICODE ERROR:', sentence)
+
 
     # update information of auth table
     auth_table = get_bigtable('auth')

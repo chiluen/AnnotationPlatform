@@ -78,6 +78,7 @@ def getannotation():
 
     rows_data_not_selected = table.read_rows(filter_=condition_annotate)
     # TODO: will O(N) influence
+    # query in multiple time is slow
 
     sentences = [(r.row_key.decode(), r.cells["text"]["text".encode()][0].value.decode()) for r in rows_data]
     sentences_not_select = set([r.row_key.decode().split('#')[-1] for r in rows_data_not_selected])
