@@ -18,20 +18,10 @@ def varifysignin():
     row_key = request.args["user"]
     table = get_bigtable("auth")
     row = table.read_row(row_key)
-    # print(row.cells['information'])
-    # print(type(row.cells['information'][b'password'][0].value)) # this will be bytes in BT
     if not row:
         return {"result": False}
     elif request.args["password"] == row.cells['information'][b'password'][0].value.decode():
-        # session.clear()
         print(request.args['user'])
         session["user"] = request.args["user"]
         return {"result": True}
     return {"result": False}
-
-# this is failed since we are not using the flask env totally
-@signinApi.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
-    g.user = user_id
-
