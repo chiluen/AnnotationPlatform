@@ -29,13 +29,16 @@ def updatedbforreview():
     
     score = request_data['decision']
     row_key = request_data['key']
+    row_old = table.row(row_key)
+    row_old.set_cell("review", "already_reviewed", str(1), timestamp)
+    row_old.commit()
 
     uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
     timestamp = datetime.utcnow()
     row = table.row(row_key_write)
     row.set_cell('review', 'score', str(score), timestamp)
-    row.set_cell('review', 'already_review', str(1), timestamp)
+    # row.set_cell('review', 'already_reviewed', str(1), timestamp)
     row.commit()
 
     update_metadata(uploader, 'already_reviewed_by', 1)
@@ -67,6 +70,11 @@ def getreview():
     condition_candidate = row_filters.RowKeyRegexFilter(regex_text_candidate.encode())
     rows_data = table.read_rows(filter_=condition_candidate)
     
+    chain_filter = row_filters.RowFilterChain(
+        filters=[
+            condition_candidate,
+        ]
+    )
     # get those have been reviewed
     regex_text_not_candidate = f'^(?:$|[^{reviewer}]).+?#.+?#already_review#(?:|[^{reviewer}]).+?#.*$'
     condition_not_candidate = row_filters.RowKeyRegexFilter(regex_text_not_candidate.encode())

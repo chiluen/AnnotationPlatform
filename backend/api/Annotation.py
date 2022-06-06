@@ -29,6 +29,9 @@ def updatedbforannotation():
     request_data = json.loads(request.data.decode())
     annotator = request.args['user']
     row_key = request_data['key']
+    row_old = table.row(row_key)
+    row_old.set_cell("annotation", "already_annotated", str(1), timestamp)
+    row_old.commit()
 
     # TODO: pass by requests
     label = request_data['decision']
@@ -39,7 +42,6 @@ def updatedbforannotation():
     row_key_write = f'{uploader}#{tag}#already_annotate#{annotator}#{label}#{sentence_hash}'
     row = table.row(row_key_write)
     row.set_cell(column_family_id, 'label', label, timestamp)
-    row.set_cell(column_family_id, "already_annotated", str(1), timestamp)
     row.commit()
     # ------------------------------- new code ------------------ #
     update_metadata(uploader, 'already_annotated_by', 1)
@@ -66,12 +68,16 @@ def getannotation():
     # dont get annotator's query
     # TODO: it is not efficient to query all ~user data at each time
     # bigtable has random row filter, using that will be faster 
+    '''
     condition_not_annotate = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
             row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
+            row_filters.RandomRow
+            row_filters.ValueRegexFilter(f'')
         ]
     )
+    '''
 
     rows_data = table.read_rows(filter_=condition_not_annotate)
     
