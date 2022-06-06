@@ -1,6 +1,3 @@
-from datetime import datetime
-from api.bigtable import get_bigtable
-
 PROJECT_ID = 'final-annotation-352116'
 BIGTABLE_INSTANCE_ID = 'final-annotation'
 TABLE_ID_AUTH = 'auth'

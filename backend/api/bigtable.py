@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from google.cloud import bigtable
 from google.cloud.bigtable import column_family
