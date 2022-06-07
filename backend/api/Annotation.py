@@ -120,7 +120,7 @@ def getannotation():
     example_output = {
             "data": "well done! that's enough for today!",
             "remain": 0,
-            "key": none
+            "key": None
         }
 
     if remain <= 0:
@@ -136,7 +136,7 @@ def getannotation():
         output = {
             "data": "well done! that's enough for today!",
             "remain": 0,
-            "key": none
+            "key": None
         }
 
     return output
