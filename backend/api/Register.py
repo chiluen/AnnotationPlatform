@@ -11,7 +11,6 @@ from constant import *
 
 #-----API Construction-----#
 registerApi = Blueprint('registerApi', __name__)
-
 #-----Routing Definition-----#
 @registerApi.route('register', methods=['POST'])
 def register():   
@@ -35,6 +34,7 @@ def register():
         row.set_cell('information', 'password', data['password'], timestamp)
         row.set_cell('information', 'upload_amount', 0, timestamp)
         row.set_cell('information', 'already_annotated_by', 0, timestamp)
+        row.set_cell('information', 'already_annotate', 0, timestamp)
         row.set_cell('information', 'already_reviewed_by', 0, timestamp)
         row.set_cell('information', 'already_review', 0, timestamp)
         row.commit()

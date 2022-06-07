@@ -47,6 +47,7 @@ def updatedbforreview():
     row.commit()
 
     update_metadata(uploader, 'already_reviewed_by', 1)
+    update_metadata(reviewer, 'already_review', 1)
     update_metadata('overall', 'num_of_reviewed', 1)
 
     print("Successfully wrote row {}.".format(row_key_write))
@@ -90,16 +91,16 @@ def getreview():
     auth_table = get_bigtable('auth')
     row_meta = auth_table.read_row('overall')
     row_anno = auth_table.read_row(reviewer)
-
+    
     total_annotate = int.from_bytes(row_meta.cells['information'][b'num_of_annotated'][0].value, 'big')
     total_review = int.from_bytes(row_meta.cells['information'][b'num_of_reviewed'][0].value, 'big')
-    num_of_annotator_annotated = int.from_bytes(row_anno.cells['information'][b'already_annotated_by'][0].value, 'big')
-    num_of_annotator_annotated_reviewed = int.from_bytes(row_anno.cells['information'][b'already_reviewed_by'][0].value, 'big')
+    num_of_reviewer_upload = int.from_bytes(row_anno.cells['information'][b'upload_amount'][0].value, 'big')
+    num_of_reviewer_annotate = int.from_bytes(row_anno.cells['information'][b'already_annotate'][0].value, 'big')
+    num_of_reviewer_review = int.from_bytes(row_anno.cells['information'][b'already_review'][0].value, 'big')
 
-    remain = total_annotate - total_review - num_of_annotator_annotated + num_of_annotator_annotated_reviewed
+    remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
     
     try:
-
         selected = random.choice(pairs)
         row_key, sentence = selected[0], selected[1]
         number_of_remain = len(pairs)
