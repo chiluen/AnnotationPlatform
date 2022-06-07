@@ -31,6 +31,7 @@ def updatedbforreview():
     row_key = request_data['key']
     if row_key is None:
         return "Nothing"
+    
     uploader, tag, status, annotator, label, hash_sent = row_key.split('#')
     
     row_key_text = f'{uploader}#{tag}#not_annotate#{hash_sent}'
@@ -71,7 +72,7 @@ def getreview():
     condition_review = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{reviewer}]).*$'.encode()),
-            row_filters.RowKeyRegexFilter(f'^.+#not_annotate#.+$'.encode()),
+            row_filters.RowKeyRegexFilter(f'^.+?#not_annotate#.+$'.encode()),
             row_filters.ColumnQualifierRegexFilter(f'already_reviewed'.encode()),
             row_filters.CellsColumnLimitFilter(1),
             row_filters.ValueRegexFilter('0'.encode()),
@@ -95,7 +96,7 @@ def getreview():
     num_of_annotator_annotated = int.from_bytes(row_anno.cells['information'][b'already_annotated_by'][0].value, 'big')
     num_of_annotator_annotated_reviewed = int.from_bytes(row_anno.cells['information'][b'already_reviewed_by'][0].value, 'big')
 
-    remain = total_annotate - total_review - num_of_annotator_annotated - num_of_annotator_annotated_reviewed
+    remain = total_annotate - total_review - num_of_annotator_annotated + num_of_annotator_annotated_reviewed
     
     try:
 
