@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    name: frontend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: frontend-pod
+  template:
+    metadata:
+      labels:
+        name: frontend-pod
+    spec:
+      containers:
+      - name: frontend
+        image: frontend
+        # 這邊image需要先傳送給k8s的docker daemon
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000

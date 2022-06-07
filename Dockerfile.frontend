@@ -1,0 +1,6 @@
+FROM node
+
+ADD frontend /frontend
+WORKDIR /frontend
+
+CMD ["yarn","start"]

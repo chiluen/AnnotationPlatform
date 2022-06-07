@@ -11,6 +11,8 @@ const App =() =>{
   const [status, setStatus] = React.useState("signin")  //三個status: signin, register, dashboard
 
   const pageselect = ()=>{
+    console.log('Test in App.js')
+    console.log(process.env.REACT_APP_HOST_IP_ADDRESS)
     if (status === "signin"){
       return <SignIn func={setStatus} func_2={setuser}/>
     }

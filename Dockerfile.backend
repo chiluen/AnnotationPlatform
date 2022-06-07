@@ -1,0 +1,10 @@
+FROM python
+
+ADD backend /backend
+WORKDIR /backend
+RUN pip3 install -r requirement.txt
+#要把requirement.txt移動到backend
+
+ENV GOOGLE_APPLICATION_CREDENTIALS=/backend/final-annotation-352116-9f1722fea2a5.json
+
+CMD ["python3", "app.py"]
