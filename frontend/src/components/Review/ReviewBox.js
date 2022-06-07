@@ -55,6 +55,7 @@ const ReviewBox = ()=> {
         setData(new_data.data)
         setRemain(new_data.remain)
         setClassification(new_data.classification)
+        setKey(new_data.key)
     }
   }
 

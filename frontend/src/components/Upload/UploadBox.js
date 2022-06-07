@@ -45,6 +45,8 @@ const UploadBox = ()=> {
     const [ctime,setTime] = useState(time); 
     const [cdate,setDate] = useState(dt); 
     const [category, setcategory] = React.useState('');
+    const [filename, setfilename] = React.useState('');
+    const [msg, setMsg] = React.useState('')
     const inputFile = useRef(null) 
 
     const user = React.useContext(NameContext);
@@ -59,29 +61,33 @@ const UploadBox = ()=> {
 		setFiles(event.target.files[0]);
 	};
 
-    // const[agree, setAgree] = useState(null);
+    const[agree, setAgree] = useState(null);
 
 
     const submitHandler = async (event) => {
         
         const data = new FormData() 
         data.append('file', files)
-        const result = await postfile(data, category, user)
+        if (category === ""){
+            alert("please choose category!")
+        }
+        else{
+            const result = await postfile(data, category, user)
+            let dt = new Date().toLocaleDateString();
+            setDate(dt);
+            let time = new Date().toLocaleTimeString();
+            setTime(time);
+            setfilename(files.name)
+            setMsg("上傳成功")
 
-        // setAgree(true);
-
-        let dt = new Date().toLocaleDateString();
-        setDate(dt);
-        let time = new Date().toLocaleTimeString();
-        setTime(time);
+            alert("upload success")
+        }
         // if (data.status === 200){
         //     // callrefresh("reload");
         //     console.log("upload success")
         // }
-        alert("upload success")
     
         //const categorydata = await postselecttableinfo(category)
-    
 	};
   
     return (
@@ -96,14 +102,14 @@ const UploadBox = ()=> {
                   <Typography>
                     <CardContent>
                         <Title>注意事項</Title>
-                        <Paper className='notice' sx={{ width: '60%', height:'120px', display: 'flex', justifyContent: "center" ,alignItems: "left"}}>
-                            <Typography component="p" variant='h6' style={{display: 'flex', alignItems: 'center',flexWrap: 'wrap',}}>
+                        <Paper className='notice' sx={{ width: '40%', height:'120px', display: 'flex', justifyContent: "center" ,alignItems: "left"}}>
+                            <Typography component="p" variant='h8' style={{display: 'flex', alignItems: 'center',flexWrap: 'wrap',}}>
                                 <DoneIcon/> 注意上傳格式
                             </Typography>
-                            <Typography component="p" variant='h6' style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap',}}>
-                                <DoneIcon/>檔名
+                            <Typography component="p" variant='h8' style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap',}}>
+                                <DoneIcon/>上傳時請選擇任務類別
                             </Typography>
-                            <Typography component="p" variant='h6' style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap',}}>
+                            <Typography component="p" variant='h8' style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap',}}>
                                 <DoneIcon/>vvvvv
                             </Typography>
                         </Paper>
@@ -144,7 +150,7 @@ const UploadBox = ()=> {
           <Grid container item xs={4}>
             <Paper className='check' sx={{ width: '330px', height:'250px', overflow: 'hidden', display: 'flex', justifyContent: "center" , alignItems: "center",margin:"0px 0px 0px 20px"}}>
                 <Typography component="Text" variant='h9' style={{display: 'flex', alignItems: 'left',flexWrap: 'wrap',}}>
-                    **這裡會顯示上傳狀態
+                    {filename} {msg}
                 </Typography>
                 <Typography component="Text" variant='h9' style={{display: 'flex', alignItems: 'left',flexWrap: 'wrap',}}>
                     Date {cdate}
