@@ -39,6 +39,7 @@ def updatedbforannotation():
         row_old = table.direct_row(row_key)
         # prevent to be retrieved at next getannotation
         row_old.set_cell("annotation", "already_annotated", str(1), timestamp)
+        row_old.set_cell('annotation', 'already_reviewed', str(0), timestamp)
         row_old.commit()
 
         uploader, tag, status, sentence_hash = row_key.split("#")
@@ -48,7 +49,6 @@ def updatedbforannotation():
         row_key_write = f'{uploader}#{tag}#already_annotate#{annotator}#{label}#{sentence_hash}'
         row = table.direct_row(row_key_write)
         row.set_cell('annotation', 'label', label, timestamp)
-        row.set_cell('annotation', 'already_reviewed', str(0), timestamp)
         
         row.commit()
 
