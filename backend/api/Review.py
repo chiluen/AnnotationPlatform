@@ -22,8 +22,8 @@ def updatedbforreview():
     """
 
     request_data = json.loads(request.data.decode())
-    print("ddddd")
-    print(request.data) #可以拿到前端POST
+    print("data get at postreview")
+    print(request_data) #可以拿到前端POST
     table = get_bigtable('annotation') 
     reviewer = request.args['user']
     
@@ -99,7 +99,14 @@ def getreview():
     num_of_reviewer_review = int.from_bytes(row_anno.cells['information'][b'already_review'][0].value, 'big')
 
     remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
-    
+    if remain <= 0:
+        return {
+            "remain": 0,
+            "data": 'Well Done! There is no more data to review.',
+            "classification": "Positive",
+            "key": None
+        }
+ 
     try:
         selected = random.choice(pairs)
         row_key, sentence = selected[0], selected[1]
@@ -119,4 +126,6 @@ def getreview():
             "classification": "Positive",
             "key": None
         }
+    print('data return at getannotation')
+    print(output)
     return output

@@ -28,6 +28,8 @@ def updatedbforannotation():
     # capture request
     request_data = json.loads(request.data.decode())
     annotator = request.args['user']
+    print('data received in postannotation')
+    print(request_data)
     row_key = request_data['key']
     print('old', row_key)
     if row_key is None:
@@ -115,15 +117,26 @@ def getannotation():
 
     remain = total_sentence - total_annotate - num_of_annotator_upload + num_of_annotator_upload_annotate 
     
+    example_output = {
+            "data": "well done! that's enough for today!",
+            "remain": 0,
+            "key": none
+        }
+
+    if remain <= 0:
+        return example_output
+
     try:
         selected = random.choice(pairs)
         key, sentence = selected[0], selected[1]
         output = {"data": sentence, "remain": remain, "key": key}
+        print('data received in getannotation')
+        print(output)
     except IndexError:
         output = {
-            "data": "Well Done! That's enough for today!",
+            "data": "well done! that's enough for today!",
             "remain": 0,
-            "key": None
+            "key": none
         }
 
     return output
