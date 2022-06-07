@@ -51,6 +51,7 @@ const AnnotationBox = ()=> {
         const new_data = await getannotationtext(user)
         setData(new_data.data)
         setRemain(new_data.remain)
+        setKey(new_data.key)
     }
   }
 
