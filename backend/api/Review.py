@@ -21,6 +21,7 @@ def updatedbforreview():
     連接DB, 更新目前的status
     """
 
+    timestamp = datetime.utcnow()
     request_data = json.loads(request.data.decode())
     print("data get at postreview")
     print(request_data) #可以拿到前端POST
@@ -40,7 +41,6 @@ def updatedbforreview():
     row_old.commit()
 
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
-    timestamp = datetime.utcnow()
     row = table.direct_row(row_key_write)
     row.set_cell('review', 'score', str(score), timestamp)
     # row.set_cell('review', 'already_reviewed', str(1), timestamp)
@@ -110,14 +110,21 @@ def getreview():
     try:
         selected = random.choice(pairs)
         row_key, sentence = selected[0], selected[1]
-        number_of_remain = len(pairs)
+
+
         label = table.read_row(row_key).cells['annotation'][b'label'][0].value.decode()
+
+        uploader, tag, status, hash_sent = row_key.split('#')
+        get_annotator_filter = row_filters.RowKeyRegexFilter(f'{uploader}#{tag}#already_annotate#.+?#.+?#{hash_sent}'.encode())
+        row_annotate = table.read_rows(filter_=get_annotator_filter)
+        row_annotate_key = [r.row_key.decode() for r in row_annotate]
+        assert len(row_annotate_key) == 1
     
         output = {
-            "remain": number_of_remain , 
+            "remain": remain , 
             "data": sentence, 
             "classification": label,
-            "key": row_key
+            "key": row_annotate_key[0]
         }
     except IndexError:
         output = {

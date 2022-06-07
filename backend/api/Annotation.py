@@ -49,8 +49,10 @@ def updatedbforannotation():
         row_key_write = f'{uploader}#{tag}#already_annotate#{annotator}#{label}#{sentence_hash}'
         row = table.direct_row(row_key_write)
         row.set_cell('annotation', 'label', label, timestamp)
-        
         row.commit()
+
+        row_old.set_cell("annotation", "label", label, timestamp)
+        row_old.commit()
 
         # ------------------------------- new code ------------------ #
         # update metadata, the value use integer
