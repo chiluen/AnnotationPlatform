@@ -96,6 +96,7 @@ def getannotation():
     )
     '''
     # think: save a tmp file locally?
+    # this take O(N)
     condition_annotate = row_filters.RowKeyRegexFilter(f'^test#.+?#not_annotate#.+$')
     candidates = table.read_rows(filter_=condition_annotate)
     candidate_row_keys = [r.row_key.decode() for r in candidates]

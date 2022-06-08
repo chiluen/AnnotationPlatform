@@ -50,6 +50,7 @@ def updatedbforreview():
     update_metadata(uploader, 'already_reviewed_by', 1)
     update_metadata(reviewer, 'already_review', 1)
     update_metadata('overall', 'num_of_reviewed', 1)
+    update_metadata('overall', 'counter_review', -1)
 
     print("Successfully wrote row {}.".format(row_key_write))
     return "Nothing"
@@ -103,10 +104,10 @@ def getreview():
     num_of_reviewer_annotate = int.from_bytes(row_anno.cells['information'][b'already_annotate'][0].value, 'big')
     num_of_reviewer_review = int.from_bytes(row_anno.cells['information'][b'already_review'][0].value, 'big')
 
-    remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
-
-    if remain < 0:
-        remain = (remain) # * (-1) - 2
+    # remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
+    auth_table = get_bigtable('auth')
+    row_metadata = auth_table.read_row('overall')
+    remain = int.from_bytes(row_metadata.cells['information'][b'counter_review'][0].value, 'big')
     
     '''
     if remain <= 0:
