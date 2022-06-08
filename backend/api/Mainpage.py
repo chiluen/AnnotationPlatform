@@ -79,11 +79,17 @@ def returnFinishinfo():
     連接DB, 拿到Fin
     """
     user = request.args['user'] #TODO: no such TOKEN
-    upload_rows, annotate_rows, annotated_by_rows, review_rows, reviewed_by_rows, password = get_user_data_rows(user)
+    # upload_rows, annotate_rows, annotated_by_rows, review_rows, reviewed_by_rows, password = get_user_data_rows(user)
     
+    table = get_bigtable('auth')
+    row = table.read_row(user)
+    finish = int.from_bytes(row.cells['information'][b'already_annotated_by'][0].value, 'big')
+    total = int.from_bytes(row.cells['information'][b'upload_amount'][0].value, 'big')
+
+
     d = {}
-    d['finish'] = sum([1 for i in annotated_by_rows])
-    d['unfinish'] = sum([1 for i in upload_rows]) - d['finish']
+    d['finish'] = finish
+    d['unfinish'] = total - finish
     
     print(d)
     return d

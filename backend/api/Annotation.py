@@ -81,6 +81,7 @@ def getannotation():
     # dont get annotator's query
     # TODO: it is not efficient to query all ~user data at each time
     # bigtable has random row filter, using that will be faster 
+    '''
     condition_annotate = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{annotator}]).*$'.encode()),
@@ -89,19 +90,20 @@ def getannotation():
             row_filters.ColumnQualifierRegexFilter(f'already_annotated'.encode()),
             row_filters.CellsColumnLimitFilter(1),
             row_filters.ValueRegexFilter('0'.encode()),
-            row_filters.RowSampleFilter(0.99),
+            row_filters.RowSampleFilter(0.05),
             # TODO: to make it scalable: set a lower probability
         ]
     )
+    '''
     # think: save a tmp file locally?
-    
+    condition_annotate = row_filters.RowKeyRegexFilter(f'^test#.+?#not_annotate#.+$')
     candidates = table.read_rows(filter_=condition_annotate)
     candidate_row_keys = [r.row_key.decode() for r in candidates]
     print('look here')
-    print(candidate_row_keys)
     
     sentences = [table.read_row(k).cells["text"][b"text"][0].value.decode() for k in candidate_row_keys]
     pairs = [(k, v) for k, v in zip(candidate_row_keys, sentences)]
+    print(pairs)
     
     auth_table = get_bigtable('auth')
     row_meta = auth_table.read_row('overall')
@@ -124,9 +126,10 @@ def getannotation():
             "remain": 0,
             "key": None
         }
-
+    '''
     if remain <= 0:
         return example_output
+    '''
 
     try:
         selected = random.choice(pairs)

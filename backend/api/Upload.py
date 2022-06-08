@@ -47,7 +47,18 @@ def updatedbforreview():
     連接DB, 上傳這一個upload file
     """
     table = get_bigtable('annotation')
-    data = request.files['file']
+    # data_raw
+    data_raw = request.files['file'].read().decode().split('\n')
+
+    # sample rows --------------- #
+    data, i = [], 0
+    for d in data_raw:
+        if i < 100:
+            data.append(d)
+            i += 1
+        else:
+            break
+    # sample rows ------------- #
     
     # TODO: check if we have this 2 columns; update: add tag
     uploader = request.args['user']
@@ -58,11 +69,13 @@ def updatedbforreview():
     # -------------------------------- new code block ---------------------- #
     num_cpu = mp.cpu_count()
     upload_volume = []
-        
-    sentences = [(uploader, tag, s.decode('utf-8'), timestamp) for s in data]
+    
+    # change: no decode here
+    sentences = [(uploader, tag, s, timestamp) for s in data]
     pool = mp.Pool(num_cpu)
     upload_volume = pool.map(upload_a_sentence, sentences)
-    upload_volume = sum(upload_volume)
+    upload_volume = len(data_raw)
+    
 
     # calculate average token by averaging over all tokens
     total_tokens = sum([len(s[2].split()) for s in sentences])

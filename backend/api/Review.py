@@ -71,6 +71,7 @@ def getreview():
     # reviwer should not be annotator or uploader
     reviewer = request.args['user']
     table = get_bigtable('annotation')
+    '''
     condition_review = row_filters.RowFilterChain(
         filters=[
             row_filters.RowKeyRegexFilter(f'^(?:$|[^{reviewer}]).*$'.encode()),
@@ -81,6 +82,8 @@ def getreview():
             row_filters.RowSampleFilter(0.99),
         ]
     )
+    '''
+    condition_review 
     
     candidates = table.read_rows(filter_=condition_review)
     candidate_row_keys = [r.row_key.decode() for r in candidates]
@@ -100,6 +103,7 @@ def getreview():
     num_of_reviewer_review = int.from_bytes(row_anno.cells['information'][b'already_review'][0].value, 'big')
 
     remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
+
     if remain <= 0:
         return {
             "remain": 0,
@@ -107,7 +111,7 @@ def getreview():
             "classification": "Positive",
             "key": None
         }
- 
+
     try:
         selected = random.choice(pairs)
         row_key, sentence = selected[0], selected[1]
