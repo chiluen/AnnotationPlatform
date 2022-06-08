@@ -50,6 +50,7 @@ def returnUserprofile():
     d["password"] = password
     
     auth_table = get_bigtable('auth')
+    anno_table = get_bigtable('annotation')
     try:
         upload_amount = auth_table.read_row(user).cells["information"][b"upload_amount"][0].value 
         d["numberOfUpload"] = int.from_bytes(upload_amount, 'big')
@@ -63,9 +64,10 @@ def returnUserprofile():
     except KeyError:
         d["numberOfReview"] = 0
    
-    reviewed_by_regtext = f'^.+?#.+?#already_review#{user}#.+?#.+?#.+?#.+$'.encode()
-    reviewed_by_data_rows = auth_table.read_rows(filter_=RowKeyRegexFilter(reviewed_by_regtext))
-    d["reviewRank"] = sum([1 for i in reviewed_by_data_rows])
+    reviewed_by_regtext = f'^{user}#.+?#already_review#.+?#.+?#.+?#.+?#.+$'.encode()
+    reviewed_by_data_rows = anno_table.read_rows(filter_=RowKeyRegexFilter(reviewed_by_regtext))
+    reviewed_scores = [int(r.cells['review'][b'score'][0].value.decode()) for r in reviewed_by_data_rows if r.cells['review'][b'score'][0].value.decode() != 'None']
+    d["reviewRank"] = sum(reviewed_scores) / len(reviewed_scores) if len(reviewed_scores) > 0 else 0
 
     print(d)
     return d

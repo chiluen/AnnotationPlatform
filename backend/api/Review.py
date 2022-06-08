@@ -39,7 +39,8 @@ def updatedbforreview():
     row_old = table.direct_row(row_key_text)
     row_old.set_cell("review", "already_reviewed", str(1), timestamp)
     row_old.commit()
-
+    
+    # write score to DB
     row_key_write = f'{uploader}#{tag}#already_review#{annotator}#{label}#{reviewer}#{score}#{hash_sent}'
     row = table.direct_row(row_key_write)
     row.set_cell('review', 'score', str(score), timestamp)
