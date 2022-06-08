@@ -83,7 +83,8 @@ def getreview():
         ]
     )
     '''
-    condition_review 
+
+    condition_review = row_filters.RowKeyRegexFilter(f'^test#.+?#not_annotate#.+$')
     
     candidates = table.read_rows(filter_=condition_review)
     candidate_row_keys = [r.row_key.decode() for r in candidates]
@@ -104,6 +105,10 @@ def getreview():
 
     remain = total_annotate - num_of_reviewer_upload - num_of_reviewer_annotate - num_of_reviewer_review
 
+    if remain < 0:
+        remain = (remain) # * (-1) - 2
+    
+    '''
     if remain <= 0:
         return {
             "remain": 0,
@@ -111,6 +116,7 @@ def getreview():
             "classification": "Positive",
             "key": None
         }
+    '''
 
     try:
         selected = random.choice(pairs)
@@ -123,7 +129,7 @@ def getreview():
         get_annotator_filter = row_filters.RowKeyRegexFilter(f'{uploader}#{tag}#already_annotate#.+?#.+?#{hash_sent}'.encode())
         row_annotate = table.read_rows(filter_=get_annotator_filter)
         row_annotate_key = [r.row_key.decode() for r in row_annotate]
-        assert len(row_annotate_key) == 1
+        # assert len(row_annotate_key) == 1
     
         output = {
             "remain": remain , 
